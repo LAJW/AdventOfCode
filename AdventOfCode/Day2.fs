@@ -1,7 +1,7 @@
 ﻿module Day2
 open Extensions
 
-let deserialize (input : string) = input.Split(',') |> Seq.map int |> Seq.toList
+let deserialize (input : string) = input |> String.split ',' |> Seq.map int |> Seq.toList
 let serialize (input : int list) = input |> Seq.map string |> String.join ","
 
 let run (program : int list) : int list =

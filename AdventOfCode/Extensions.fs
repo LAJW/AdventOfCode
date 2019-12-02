@@ -3,6 +3,7 @@ open System
 
 module String =
     let join (separator : string) (values : string seq) = String.Join(separator, values)
+    let split (separator : char) (value : string) = value.Split(separator)
 
 module Seq =
     let replaceAt index newValue list =
