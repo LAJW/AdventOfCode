@@ -2,8 +2,7 @@
 open FSharp.Data.UnitSystems.SI.UnitSymbols
 open Extensions
 
-[<EntryPoint>]
-let main argv =
+let day2() =
     File.ReadLines("input2.txt")
     |> Seq.head
     |> Day2.deserialize
@@ -11,4 +10,7 @@ let main argv =
     |> Seq.map(fun tuple -> tuple.ToString())
     |> String.join "|"
     |> printfn "%s"
+
+[<EntryPoint>]
+let main argv =
     0
