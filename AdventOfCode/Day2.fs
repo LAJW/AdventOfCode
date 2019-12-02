@@ -1,12 +1,6 @@
 ﻿module Day2
 open System
-
-type String with
-    static member join (separator : string) (values : string seq) = String.Join(separator, values)
-
-type List<'u> with
-    static member replaceAt index newValue list =
-        list |> List.mapi(fun i value -> if i = index then newValue else value)
+open Extensions
 
 let deserialize (input : string) = input.Split(',') |> Seq.map int |> Seq.toList
 let serialize (input : int list) = input |> Seq.map string |> String.join ","
