@@ -1,5 +1,4 @@
 ﻿module Day2
-open System
 open Extensions
 
 let deserialize (input : string) = input.Split(',') |> Seq.map int |> Seq.toList
@@ -29,18 +28,7 @@ let runWithInputs a b input =
     |> run
     |> List.head
 
-let func2 (input : string) =
-    let program = deserialize input
-    let permutations = Seq.allPairs (Seq.init 99 id) (Seq.init 99 id)
-    permutations
-    |> Seq.filter (fun (a, b) -> (runWithInputs a b program) = 19690720)
-    |> Seq.map(fun tuple -> tuple.ToString())
-    |> String.join "|"
-
-let func (input : string) =
-    input
-    |> deserialize
-    |> run
-    |> serialize
+let findArgumentsFor (needle : int) (program : int list) : (int * int) seq =
+    Seq.allPairs (Seq.init 99 id) (Seq.init 99 id)
+    |> Seq.filter (fun (a, b) -> (runWithInputs a b program) = needle)
     
-
