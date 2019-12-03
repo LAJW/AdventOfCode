@@ -14,7 +14,7 @@ let day2() =
 let day3() =
     File.ReadLines("input3.txt")
     |> Seq.toList
-    |> Day3.distance
+    |> Day3.intersectionSteps
     |> printfn "%d"
 
 [<EntryPoint>]
