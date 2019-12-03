@@ -11,6 +11,13 @@ let day2() =
     |> String.join "|"
     |> printfn "%s"
 
+let day3() =
+    File.ReadLines("input3.txt")
+    |> Seq.toList
+    |> Day3.distance
+    |> printfn "%d"
+
 [<EntryPoint>]
 let main argv =
+    day3()
     0
