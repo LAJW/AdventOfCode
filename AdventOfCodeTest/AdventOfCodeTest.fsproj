@@ -49,6 +49,7 @@
     <Compile Include="Utils.fs" />
     <Compile Include="Day2Test.fs" />
     <Compile Include="Day3Test.fs" />
+    <Compile Include="Day4Test.fs" />
     <None Include="Script.fsx" />
     <Content Include="packages.config" />
   </ItemGroup>

@@ -17,7 +17,10 @@ let day3() =
     |> Day3.intersectionSteps
     |> printfn "%d"
 
+let day4() =
+    Day4.findAllValidInRage Day4.isValid2 171309 643603
+    |> printfn "%d"
+
 [<EntryPoint>]
 let main argv =
-    day3()
     0
