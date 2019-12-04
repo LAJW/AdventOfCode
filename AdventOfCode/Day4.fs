@@ -1,21 +1,14 @@
 ﻿module Day4
 
-let pairs password = password |> Seq.map int |> Seq.pairwise
+let hasAdjacentPair = Seq.pairwise >> Seq.exists (fun (a, b) -> a = b)
 
-let hasAdjacentPair (password : string) =
-    password |> pairs |> Seq.exists (fun (a, b) -> a = b)
+let neverDecreases = Seq.pairwise >> Seq.forall (fun (a, b) -> a <= b)
 
-let neverDecreases (password : string) =
-    password |> pairs |> Seq.forall (fun (a, b) -> a <= b)
-
-let nonAdjacentPairExists (password : string) =
-    password
-    |> pairs
-    |> Seq.filter (fun (a, b) -> a = b)
-    |> Seq.map snd
-    |> Seq.groupBy id
-    |> Seq.toList
-    |> Seq.exists (snd >> Seq.length >> ((=) 1)) // 1 - pair exists, 2 is too much
+let nonAdjacentPairExists =
+    Seq.pairwise
+    >> Seq.filter (fun (a, b) -> a = b)
+    >> Seq.countBy fst
+    >> Seq.exists (snd >> ((=) 1)) // 1 - pair exists, 2 is too much
 
 let isValid (password : string) =
     hasAdjacentPair password && neverDecreases password
