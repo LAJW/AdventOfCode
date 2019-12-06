@@ -27,24 +27,24 @@ let rec wireToSegments (pos : int * int) = function
         (pos, newPos) :: wireToSegments newPos tail
     | [] -> []
 
-let orient segment =
-    let (x1, y1), (x2, y2) = segment
-    (min x1 x2, min y1 y2), (max x1 x2, max y1 y2)
+let isHorizontal ((x1, _y1), (x2, _y2)) = x1 = x2
+
+let isVertical ((_x1, y1), (_x2, y2)) = y1 = y2
+
+let orient ((x1, y1), (x2, y2)) = (min x1 x2, min y1 y2), (max x1 x2, max y1 y2)
 
 let intersect segment1 segment2 =
     // Not my proudest accomplishment
-    let (s1x1, s1y1), (s1x2, s1y2) = orient segment1
-    let (s2x1, s2y1), (s2x2, s2y2) = orient segment2
-    if s1x1 = s1x2 && s2y1 = s2y2 then
-        let x = s1x1
-        let y = s2y1
-        if x > s2x1 && x < s2x2 && y > s1y1 && y < s1y2 then
+    if isHorizontal segment1 && isVertical segment2 then
+        let (x, ly), (_, uy) = orient segment1
+        let (lx, y), (ux, _) = orient segment2
+        if x > lx && x < ux && y > ly && y < uy then
             Some (x, y)
         else None
-    else if s1y1 = s1y2 && s2x1 = s2x2 then
-        let x = s2x1
-        let y = s1y1
-        if x > s1x1 && x < s1x2 && y > s2y1 && y < s2y2 then
+    else if isVertical segment1 && isHorizontal segment2 then
+        let (lx, y), (ux, _) = orient segment1
+        let (x, ly), (_, uy) = orient segment2
+        if x > lx && x < ux && y > ly && y < uy then
             Some (x, y)
         else None
     else None
