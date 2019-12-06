@@ -38,13 +38,13 @@ let intersect segment1 segment2 =
     if s1x1 = s1x2 && s2y1 = s2y2 then
         let x = s1x1
         let y = s2y1
-        if x >= s2x1 + 1 && x <= s2x2 - 1 && y >= s1y1 + 1 && y <= s1y2 - 1 then
+        if x > s2x1 && x < s2x2 && y > s1y1 && y < s1y2 then
             Some (x, y)
         else None
     else if s1y1 = s1y2 && s2x1 = s2x2 then
         let x = s2x1
         let y = s1y1
-        if x >= s1x1 + 1 && x <= s1x2 - 1 && y >= s2y1 + 1 && y <= s2y2 - 1 then
+        if x > s1x1 && x < s1x2 && y > s2y1 && y < s2y2 then
             Some (x, y)
         else None
     else None
@@ -79,5 +79,5 @@ let distance (wires : string list) =
     let segments = wires |> List.collect (parseWire >> Seq.toList >> wireToSegments (0, 0))
     Seq.allPairs segments segments
     |> Seq.choose (fun (s1, s2) -> intersect s1 s2)
-    |> Seq.map (fun (x, y) -> abs(x) + abs(y))
+    |> Seq.map (fun (x, y) -> abs x + abs y)
     |> Seq.min
