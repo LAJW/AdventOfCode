@@ -64,8 +64,8 @@ let rec countSteps pos dest count = function
 
 let intersectionSteps (rawWires : string list) =
     let wires = rawWires |> List.map (parseWire >> Seq.toList)
-    let segments = wires |> List.collect(wireToSegments (0, 0))
-    Seq.allPairs segments segments
+    let segmentsLists = wires |> List.map (wireToSegments (0, 0))
+    Seq.allPairs segmentsLists.[0] segmentsLists.[1]
     |> Seq.choose (fun (s1, s2) -> intersect s1 s2)
     |> Seq.choose(fun intersection ->
         wires
@@ -76,8 +76,8 @@ let intersectionSteps (rawWires : string list) =
     |> Seq.min
 
 let distance (wires : string list) =
-    let segments = wires |> List.collect (parseWire >> Seq.toList >> wireToSegments (0, 0))
-    Seq.allPairs segments segments
+    let segmentsLists = wires |> List.map (parseWire >> Seq.toList >> wireToSegments (0, 0))
+    Seq.allPairs segmentsLists.[0] segmentsLists.[1]
     |> Seq.choose (fun (s1, s2) -> intersect s1 s2)
     |> Seq.map (fun (x, y) -> abs x + abs y)
     |> Seq.min
