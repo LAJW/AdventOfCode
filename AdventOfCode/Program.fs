@@ -21,6 +21,19 @@ let day4() =
     Day4.findAllValidInRage Day4.isValid2 171309 643603
     |> printfn "%d"
 
+let day6Part1() =
+    File.ReadLines("input6.txt")
+    |> Day6.parse
+    |> Day6.countOrbits
+    |> printfn "%d"
+
+let day6Part2() =
+    File.ReadLines("input6.txt")
+    |> Day6.parse
+    |> Day6.distance "YOU" "SAN"
+    |> printfn "%d"
+
 [<EntryPoint>]
 let main argv =
+    day6Part2()
     0
