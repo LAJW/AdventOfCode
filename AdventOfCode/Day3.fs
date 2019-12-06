@@ -62,11 +62,23 @@ let rec countSteps pos dest count = function
         else tail |> countSteps newPos dest (count + 1)
     | [] -> None
 
+let wiresToAnnotatedSegments (wires : string list) =
+    wires
+    |> Seq.map (parseWire >> Seq.toList >> wireToSegments (0, 0))
+    |> Seq.mapi (fun id segments -> segments |> List.map(fun segment -> id, segment))
+    |> Seq.collect id
+    |> Seq.toList
+
+let intersections segments =
+    Seq.allPairs segments segments
+    |> Seq.filter (fun ((id1, s1), (id2, s2)) -> id1 <> id2)
+    |> Seq.choose (fun ((id1, s1), (id2, s2)) -> intersect s1 s2)
+    
+
 let intersectionSteps (rawWires : string list) =
     let wires = rawWires |> List.map (parseWire >> Seq.toList)
-    let segmentsLists = wires |> List.map (wireToSegments (0, 0))
-    Seq.allPairs segmentsLists.[0] segmentsLists.[1]
-    |> Seq.choose (fun (s1, s2) -> intersect s1 s2)
+    wiresToAnnotatedSegments rawWires
+    |> intersections
     |> Seq.choose(fun intersection ->
         wires
         |> Seq.choose (countSteps (0, 0) intersection 0)
@@ -75,9 +87,8 @@ let intersectionSteps (rawWires : string list) =
         |> Option.map Seq.sum)
     |> Seq.min
 
-let distance (wires : string list) =
-    let segmentsLists = wires |> List.map (parseWire >> Seq.toList >> wireToSegments (0, 0))
-    Seq.allPairs segmentsLists.[0] segmentsLists.[1]
-    |> Seq.choose (fun (s1, s2) -> intersect s1 s2)
-    |> Seq.map (fun (x, y) -> abs x + abs y)
-    |> Seq.min
+let distance =
+    wiresToAnnotatedSegments
+    >> intersections
+    >> Seq.map (fun (x, y) -> abs x + abs y)
+    >> Seq.min
