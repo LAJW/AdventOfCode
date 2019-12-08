@@ -1,25 +1,32 @@
 ﻿module Day5
 open Extensions
 open System
+open System.Diagnostics
 
 let deserialize = String.split ',' >> Seq.map int >> Seq.toList
 let serialize (input : int list) = input |> Seq.map string |> String.join ","
 
+[<DebuggerDisplay("Program : {Index} {DebuggerOutput}")>]
 type Memory = {
     Index   : int
     Inputs  : int list
     Outputs : int list
     Program : int list
-}
+} with
+    member this.DebuggerOutput with get() = this.Program |> Seq.map string |> String.join ","
 
 type Mode = Immediate | Positional
-type Instruction = Add | Multiply | Read | Write | Stop
+type Instruction = Add | Multiply | Read | Write | JumpIfTrue | JumpIfFalse | LessThan | Equals | Stop
 module Instruction =
     let paramCount = function
         | Add -> 3
         | Multiply -> 3
         | Read -> 1
         | Write -> 1
+        | JumpIfTrue -> 2
+        | JumpIfFalse -> 2
+        | LessThan -> 3
+        | Equals -> 3
         | Stop -> 0
 
 let parseOpcode(opcode : int) : Instruction * (Mode list) =
@@ -28,6 +35,10 @@ let parseOpcode(opcode : int) : Instruction * (Mode list) =
         | 2 -> Multiply
         | 3 -> Read
         | 4 -> Write
+        | 5 -> JumpIfTrue
+        | 6 -> JumpIfFalse
+        | 7 -> LessThan
+        | 8 -> Equals
         | 99 -> Stop
     if instruction = Stop then
         instruction, []
@@ -69,6 +80,18 @@ let run (inputs : int list) (program : int list) : (int list) =
                         Index = nextIndex }
         | Write -> step {
             memory with Outputs = outputs @ [ values.[0] ]
+                        Index = nextIndex }
+        | JumpIfTrue ->
+            if values.[0] <> 0 then step { memory with Index = values.[1] }
+            else step { memory with Index = index + 3 }
+        | JumpIfFalse ->
+            if values.[0] = 0 then step { memory with Index = values.[1] }
+            else step { memory with Index = index + 3 }
+        | LessThan -> step {
+            memory with Program = program |> List.replaceAt program.[index + 3] (if values.[0] < values.[1] then 1 else 0)
+                        Index = nextIndex }
+        | Equals -> step {
+            memory with Program = program |> List.replaceAt program.[index + 3] (if values.[0] = values.[1] then 1 else 0)
                         Index = nextIndex }
         | Stop -> memory
     let endState = step { Index = 0; Inputs = inputs; Outputs = []; Program = program }
