@@ -54,6 +54,7 @@
     <None Include="Script.fsx" />
     <Content Include="packages.config" />
     <Compile Include="Day6Test.fs" />
+    <Compile Include="Day7Test.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FSharp.Core">
