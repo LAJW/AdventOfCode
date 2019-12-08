@@ -76,7 +76,14 @@ let day8Part1() =
     |> (function [a; b] -> a * b)
     |> printfn "%d"
 
+let day8Part2() =
+    File.ReadLines("input8.txt")
+    |> Seq.head
+    |> Day8.decode 25 6
+    |> Seq.chunkBySize 25
+    |> Seq.iter (Seq.map (fun x -> if x = 0 then " " else "#") >> String.join "" >> printfn "%s")
+
 [<EntryPoint>]
 let main argv =
-    day8Part1()
+    day8Part2()
     0
