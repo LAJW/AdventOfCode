@@ -51,6 +51,17 @@ let parseOpcode(opcode : int) : Instruction * (Mode list) =
         instruction, modes
         
 
+type Argument(state : Memory, mode : Mode, value : int) =
+    // Value of an argument ignoring value's mode
+    member this.Raw = value
+
+    // Value of an argument respecting value's mode
+    member this.Value =
+        let program = state.Program
+        match mode with 
+        | Immediate -> value
+        | Positional -> program.[value]
+
 let run (inputs : int list) (program : int list) : (int list) =
     let rec step (memory : Memory) : Memory =
         let program = memory.Program
@@ -60,28 +71,24 @@ let run (inputs : int list) (program : int list) : (int list) =
         let instruction, modes = parseOpcode program.[index]
         let values =
             Seq.zip (program |> Seq.skip (index + 1)) modes
-            |> Seq.map (fun (value, mode) ->
-                match mode with
-                | Immediate -> value
-                | Positional -> program.[value]
-            )
+            |> Seq.map (fun (value, mode) -> Argument(memory, mode, value))
             |> Seq.toList
         let nextIndex = index + 1 + (Seq.length modes)
-        let apply func memory =
-            { memory with Program = program |> List.replaceAt (program.[index + 3]) (func values.[0] values.[1])
+        let apply func memory = match values with [a; b; output] ->
+            { memory with Program = program |> List.replaceAt (output.Raw) (func a.Value b.Value)
                           Index = nextIndex }
-        let jumpIf func memory =
-            if func values.[0] then { memory with Index = values.[1] }
+        let jumpIf func memory = match values with [condition; jumpTo] ->
+            if func condition.Value then { memory with Index = jumpTo.Value }
             else { memory with Index = nextIndex }
         match instruction with
         | Add -> memory |> apply (+) |> step
         | Multiply -> memory |> apply (*) |> step
         | Read -> step {
-            memory with Program = program |> List.replaceAt (program.[index + 1]) (List.head inputs)
+            memory with Program = program |> List.replaceAt (values.[0].Raw) (List.head inputs)
                         Inputs = List.tail inputs
                         Index = nextIndex }
         | Write -> step {
-            memory with Outputs = outputs @ [ values.[0] ]
+            memory with Outputs = outputs @ [ values.[0].Value ]
                         Index = nextIndex }
         | JumpIfTrue -> memory |> jumpIf ((<>) 0) |> step
         | JumpIfFalse -> memory |> jumpIf ((=) 0) |> step
