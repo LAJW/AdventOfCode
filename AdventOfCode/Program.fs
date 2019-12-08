@@ -51,7 +51,15 @@ let day6Part2() =
     |> Day6.distance "YOU" "SAN"
     |> printfn "%d"
 
+
+let day7Part1() =
+    File.ReadLines("input7.txt")
+    |> Seq.head
+    |> Day5.deserialize
+    |> Day7.findHighestOutput
+    |> printfn "%d"
+
 [<EntryPoint>]
 let main argv =
-    day5Part2()
+    day7Part1()
     0
