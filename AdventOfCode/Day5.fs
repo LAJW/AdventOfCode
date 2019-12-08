@@ -67,13 +67,15 @@ let run (inputs : int list) (program : int list) : (int list) =
             )
             |> Seq.toList
         let nextIndex = index + 1 + (Seq.length modes)
+        let apply func memory =
+            { memory with Program = program |> List.replaceAt (program.[index + 3]) (func values.[0] values.[1])
+                          Index = nextIndex }
+        let jumpIf func memory =
+            if func values.[0] then { memory with Index = values.[1] }
+            else { memory with Index = nextIndex }
         match instruction with
-        | Add -> step {
-            memory with Program = program |> List.replaceAt (program.[index + 3]) (values.[0] + values.[1])
-                        Index = nextIndex }
-        | Multiply -> step {
-            memory with Program = program |> List.replaceAt (program.[index + 3]) (values.[0] * values.[1])
-                        Index = nextIndex }
+        | Add -> memory |> apply (+) |> step
+        | Multiply -> memory |> apply (*) |> step
         | Read -> step {
             memory with Program = program |> List.replaceAt (program.[index + 1]) (List.head inputs)
                         Inputs = List.tail inputs
@@ -81,18 +83,10 @@ let run (inputs : int list) (program : int list) : (int list) =
         | Write -> step {
             memory with Outputs = outputs @ [ values.[0] ]
                         Index = nextIndex }
-        | JumpIfTrue ->
-            if values.[0] <> 0 then step { memory with Index = values.[1] }
-            else step { memory with Index = index + 3 }
-        | JumpIfFalse ->
-            if values.[0] = 0 then step { memory with Index = values.[1] }
-            else step { memory with Index = index + 3 }
-        | LessThan -> step {
-            memory with Program = program |> List.replaceAt program.[index + 3] (if values.[0] < values.[1] then 1 else 0)
-                        Index = nextIndex }
-        | Equals -> step {
-            memory with Program = program |> List.replaceAt program.[index + 3] (if values.[0] = values.[1] then 1 else 0)
-                        Index = nextIndex }
+        | JumpIfTrue -> memory |> jumpIf ((<>) 0) |> step
+        | JumpIfFalse -> memory |> jumpIf ((=) 0) |> step
+        | LessThan -> memory |> apply (fun a b -> if a < b then 1 else 0) |> step
+        | Equals -> memory |> apply (fun a b -> if a = b then 1 else 0) |> step
         | Stop -> memory
     let endState = step { Index = 0; Inputs = inputs; Outputs = []; Program = program }
     endState.Outputs
