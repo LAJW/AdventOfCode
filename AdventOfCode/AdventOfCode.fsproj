@@ -52,6 +52,7 @@
     <Compile Include="Day2.fs" />
     <Compile Include="Day3.fs" />
     <Compile Include="Day4.fs" />
+    <Compile Include="Day5.fs" />
     <Compile Include="Day6.fs" />
     <Compile Include="Program.fs" />
     <None Include="App.config" />
@@ -64,6 +65,9 @@
     </Content>
     <Content Include="input2.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="input5.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="input6.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

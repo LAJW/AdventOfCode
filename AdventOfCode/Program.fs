@@ -21,6 +21,15 @@ let day4() =
     Day4.findAllValidInRage Day4.isValid2 171309 643603
     |> printfn "%d"
 
+let day5() =
+    File.ReadLines("input5.txt")
+    |> Seq.head
+    |> Day2.deserialize
+    |> Day5.run [1]
+    |> Seq.map string
+    |> String.join ","
+    |> printfn "%s"
+
 let day6Part1() =
     File.ReadLines("input6.txt")
     |> Day6.parse
@@ -35,5 +44,5 @@ let day6Part2() =
 
 [<EntryPoint>]
 let main argv =
-    day6Part2()
+    day5()
     0
