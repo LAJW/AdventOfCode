@@ -24,3 +24,8 @@ type All() =
         |> Day5.deserialize
         |> Day7.findHighestOutput
         |> Assert.equal 65210
+
+    [<TestMethod>]
+    member this.Test4() =
+        let result = "0222112222120000" |> Day8.decode 2 2 |> Seq.toArray
+        CollectionAssert.AreEqual([| 0; 1; 1; 0 |], result)
