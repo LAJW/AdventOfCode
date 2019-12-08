@@ -62,7 +62,7 @@ type Argument(state : Memory, mode : Mode, value : int) =
         | Immediate -> value
         | Positional -> program.[value]
 
-let run (inputs : int list) (program : int list) : (int list) =
+let runFull (inputs : int list) (program : int list) : Memory =
     let rec step (memory : Memory) : Memory =
         let program = memory.Program
         let index = memory.Index
@@ -95,6 +95,7 @@ let run (inputs : int list) (program : int list) : (int list) =
         | LessThan -> memory |> apply (fun a b -> if a < b then 1 else 0) |> step
         | Equals -> memory |> apply (fun a b -> if a = b then 1 else 0) |> step
         | Stop -> memory
-    let endState = step { Index = 0; Inputs = inputs; Outputs = []; Program = program }
-    endState.Outputs
+    step { Index = 0; Inputs = inputs; Outputs = []; Program = program }
+
+let run (inputs : int list) (program : int list) = (runFull inputs program).Outputs
 
