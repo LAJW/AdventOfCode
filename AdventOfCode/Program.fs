@@ -59,7 +59,24 @@ let day7Part1() =
     |> Day7.findHighestOutput
     |> printfn "%d"
 
+
+
+let day8Part1() =
+    File.ReadLines("input8.txt")
+    |> Seq.head
+    |> Seq.map (fun char -> char.ToString() |> int)
+    |> Seq.chunkBySize (25 * 6)
+    |> Seq.minBy (Seq.filter ((=) 0) >> Seq.length)
+    |> Seq.countBy id
+    |> Seq.sortBy fst
+    |> Seq.skip 1
+    |> Seq.take 2
+    |> Seq.map snd
+    |> Seq.toList
+    |> (function [a; b] -> a * b)
+    |> printfn "%d"
+
 [<EntryPoint>]
 let main argv =
-    day7Part1()
+    day8Part1()
     0
