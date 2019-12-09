@@ -6,7 +6,7 @@ let day2() =
     File.ReadLines("input2.txt")
     |> Seq.head
     |> Day2.deserialize
-    |> Day2.findArgumentsFor 19690720
+    |> Day2.findArgumentsFor 19690720L
     |> Seq.map(fun tuple -> tuple.ToString())
     |> String.join "|"
     |> printfn "%s"
@@ -25,7 +25,7 @@ let day5Part1() =
     File.ReadLines("input5.txt")
     |> Seq.head
     |> Day2.deserialize
-    |> Day5.run [1]
+    |> Day5.run [1L]
     |> Seq.map string
     |> String.join ","
     |> printfn "%s"
@@ -34,7 +34,7 @@ let day5Part2() =
     File.ReadLines("input5.txt")
     |> Seq.head
     |> Day2.deserialize
-    |> Day5.run [5]
+    |> Day5.run [5L]
     |> Seq.map string
     |> String.join ","
     |> printfn "%s"
@@ -83,7 +83,25 @@ let day8Part2() =
     |> Seq.chunkBySize 25
     |> Seq.iter (Seq.map (fun x -> if x = 0 then " " else "#") >> String.join "" >> printfn "%s")
 
+let day9Part1() =
+    File.ReadLines("input9.txt")
+    |> Seq.head
+    |> Day5.deserialize
+    |> Day5.run [1L]
+    |> Seq.map string
+    |> String.join ","
+    |> printfn "%s"
+
+let day9Part2() =
+    File.ReadLines("input9.txt")
+    |> Seq.head
+    |> Day5.deserialize
+    |> Day5.run [2L]
+    |> Seq.map string
+    |> String.join ","
+    |> printfn "%s"
+
 [<EntryPoint>]
 let main argv =
-    day8Part2()
+    day9Part2()
     0

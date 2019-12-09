@@ -1,17 +1,17 @@
 ﻿module Day7
 
-let findHighestOutput program =
+let findHighestOutput (program : int64 list) : int64 =
     let run a b =
         program |> Day5.run [a; b] |> List.head
 
     let runAllModules a b c d e =
-        run a 0
+        run a 0L
         |> run b
         |> run c
         |> run d
         |> run e
 
-    let digits = seq { for i in 0..4 do yield i } |> Seq.toList
+    let digits = seq { for i in 0..4 do yield i } |> Seq.map int64 |> Seq.toList
 
     let rec allPermutations (list : 'u list) (count : int) : 'u list seq =
         assert(count >= 1)
