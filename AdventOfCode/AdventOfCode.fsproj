@@ -48,6 +48,7 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="Extensions.fs" />
+    <Compile Include="VecI.fs" />
     <Compile Include="Day1.fs" />
     <Compile Include="Day3.fs" />
     <Compile Include="Day4.fs" />

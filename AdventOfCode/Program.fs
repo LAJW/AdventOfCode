@@ -108,8 +108,8 @@ let day10Part1() =
     data
     |> String.join ""
     |> Day10.parse width height
-    |> Day10.findBestStationVisibleAsteroidCount
-    |> printfn "%d"
+    |> Day10.findBestStationLocation
+    |> (fun pair -> printfn "%s" (pair.ToString()))
 
 [<EntryPoint>]
 let main argv =
