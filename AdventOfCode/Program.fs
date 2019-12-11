@@ -101,7 +101,17 @@ let day9Part2() =
     |> String.join ","
     |> printfn "%s"
 
+let day10Part1() =
+    let data = File.ReadLines("input10.txt") |> Seq.toList
+    let height = data.Length
+    let width = data.Head.Length
+    data
+    |> String.join ""
+    |> Day10.parse width height
+    |> Day10.findBestStationVisibleAsteroidCount
+    |> printfn "%d"
+
 [<EntryPoint>]
 let main argv =
-    day9Part2()
+    day10Part1()
     0

@@ -20,5 +20,12 @@ module List =
     let replaceAt index newValue (list : list<'u>) =
         Seq.replaceAt index newValue list |> Seq.toList
 
+module Array2D =
+    let toSeq (array : 'u[,]) = seq {
+            for x in 0..(array.GetLength(0) - 1) do
+                for y in 0..(array.GetLength(1) - 1) do
+                    yield (x, y), array.[x, y]
+        }
+
 
 
