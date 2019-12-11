@@ -56,6 +56,7 @@
     <Compile Include="Day6Test.fs" />
     <Compile Include="Day7Test.fs" />
     <Compile Include="Day9Test.fs" />
+    <Compile Include="Day10Test.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FSharp.Core">
