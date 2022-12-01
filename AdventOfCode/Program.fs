@@ -1,5 +1,4 @@
 ﻿open System.IO
-open FSharp.Data.UnitSystems.SI.UnitSymbols
 open Extensions
 
 let day2() =
