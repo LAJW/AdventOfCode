@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29519.87
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "AdventOfCode", "AdventOfCode\AdventOfCode.fsproj", "{0F7B7025-A1AC-439A-85AF-44AFFAA34EB9}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "AdventOfCode2019", "AdventOfCode2019\AdventOfCode2019.fsproj", "{0F7B7025-A1AC-439A-85AF-44AFFAA34EB9}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "AdventOfCodeTest", "AdventOfCodeTest\AdventOfCodeTest.fsproj", "{CE6E5AE3-FDCA-4823-A3A0-5DCB2162AE2F}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "AdventOfCode2019Test", "AdventOfCode2019Test\AdventOfCode2019Test.fsproj", "{CE6E5AE3-FDCA-4823-A3A0-5DCB2162AE2F}"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "AdventOfCode2022", "AdventOfCode2022\AdventOfCode2022.fsproj", "{665879CC-3602-4E6C-9841-52C7772655C6}"
 EndProject

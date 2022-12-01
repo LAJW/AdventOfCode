@@ -3,6 +3,7 @@
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <TargetFramework>net6.0</TargetFramework>
+    <RootNamespace>AdventOfCodeTest</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -20,7 +21,7 @@
     <Compile Include="Day10Test.fs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\AdventOfCode\AdventOfCode.fsproj">
+    <ProjectReference Include="..\AdventOfCode2019\AdventOfCode2019.fsproj">
       <Name>AdventOfCode</Name>
       <Project>{0f7b7025-a1ac-439a-85af-44affaa34eb9}</Project>
       <Private>True</Private>
