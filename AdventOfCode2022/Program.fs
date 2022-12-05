@@ -98,9 +98,3 @@ let day2_2() =
 let main argv =
     day2_2()
     0
-
-
-[<EntryPoint>]
-let main _argv =
-    day1_2()
-    0
