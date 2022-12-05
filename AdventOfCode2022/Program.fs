@@ -112,8 +112,18 @@ module Day3 =
         )
         |> Seq.sum
         |> printfn "Result: %d"
+    let part2() =
+        File.ReadLines("data/day3.txt")
+        |> Seq.chunkBySize 3
+        |> Seq.map(fun group ->
+            match group |> Seq.map Set |> Set.intersectMany |> Seq.toList with
+            | [head] -> head |> priority
+            | _ -> failwith "Multiple common elements"
+        )
+        |> Seq.sum
+        |> printfn "Result: %d"
 
 [<EntryPoint>]
 let main argv =
-    Day3.part1()
+    Day3.part2()
     0
