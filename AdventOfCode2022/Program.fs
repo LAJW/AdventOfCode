@@ -42,12 +42,12 @@ let day2_1() =
         | Paper -> 2
         | Scissors -> 3
     let round = function
-        | (Rock, Paper) -> 0
-        | (Rock, Scissors) -> 6
-        | (Paper, Rock) -> 6
-        | (Paper, Scissors) -> 0
-        | (Scissors, Rock) -> 0
-        | (Scissors, Paper) -> 6
+        | Rock, Paper -> 0
+        | Rock, Scissors -> 6
+        | Paper, Rock -> 6
+        | Paper, Scissors -> 0
+        | Scissors, Rock -> 0
+        | Scissors, Paper -> 6
         | _ -> 3
     File.ReadLines("data/day2.txt")
     |> Seq.map(String.split [" "] >> Seq.map(parse) >> Seq.toList)
@@ -87,7 +87,7 @@ let day2_2() =
         | shape, Draw -> shape
     File.ReadLines("data/day2.txt")
     |> Seq.map(fun pair ->
-        let [left; right] = pair.Split(' ') |> Array.toList
+        let [| left; right |] = pair.Split(' ')
         (parseLeft left, parseRight right)
     )
     |> Seq.map(fun decision -> score (pick decision) + round (snd decision))
