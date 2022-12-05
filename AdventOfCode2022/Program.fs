@@ -123,7 +123,22 @@ module Day3 =
         |> Seq.sum
         |> printfn "Result: %d"
 
+module Day4 =
+    let part1() =
+        File.ReadLines("data/day4.txt")
+        |> Seq.map (String.split [","] >> Seq.map(String.split ["-"] >> Seq.map int >> toList) >> toList)
+        |> Seq.filter (function [[a; b]; [c; d]] -> a <= c && b >= d || a >= c && b <= d)
+        |> Seq.length
+        |> printfn "Result: %d"
+
+    let part2() =
+        File.ReadLines("data/day4.txt")
+        |> Seq.map (String.split [","] >> Seq.map(String.split ["-"] >> Seq.map int >> toList) >> toList)
+        |> Seq.filter (function [[a; b]; [c; d]] -> b >= c && a <= d)
+        |> Seq.length
+        |> printfn "Result: %d"
+
 [<EntryPoint>]
 let main argv =
-    Day3.part2()
+    Day4.part2()
     0
