@@ -1,6 +1,7 @@
 ﻿module FSharpPlayground
 open FSharpPlus
 open System.IO
+open System
 
 let day1_1() =
     File.ReadLines("./data.txt")
@@ -93,8 +94,26 @@ let day2_2() =
     |> Seq.map(fun decision -> score (pick decision) + round (snd decision))
     |> Seq.sum
     |> printfn "%d"
-    
+
+module Day3 =
+    let priority (ch: char) =
+        if Char.IsLower ch then int ch - int 'a' + 1
+        else if Char.IsUpper ch then int ch - int 'A' + 27
+        else failwith $"Invalid char: {ch}"
+    let part1() =
+        File.ReadLines("data/day3.txt")
+        |> Seq.map(fun chars ->
+            let middle = chars.Length / 2
+            let firstHalf = chars.Substring(0, middle) |> Set
+            let secondHalf = chars.Substring(middle) |> Set
+            match firstHalf |> Set.intersect secondHalf |> Set.toList with
+            | [head] -> head |> priority
+            | _ -> failwith "Multiple common elements"
+        )
+        |> Seq.sum
+        |> printfn "Result: %d"
+
 [<EntryPoint>]
 let main argv =
-    day2_2()
+    Day3.part1()
     0
