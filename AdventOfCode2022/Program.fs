@@ -23,7 +23,12 @@ let day1_2() =
     |> Seq.take 3
     |> Seq.sum
     |> printfn "%d"
-    
+
+type Shape =
+    | Rock
+    | Paper
+    | Scissors
+
 let day2_1() =
     let parse = function
         | "X" -> Rock
