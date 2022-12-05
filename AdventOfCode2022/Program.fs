@@ -49,7 +49,7 @@ let day2_1() =
         | (Scissors, Rock) -> 0
         | (Scissors, Paper) -> 6
         | _ -> 3
-    File.ReadLines("input_2022_2.txt")
+    File.ReadLines("data/day2.txt")
     |> Seq.map(String.split [" "] >> Seq.map(parse) >> Seq.toList)
     |> Seq.map(fun [theirs; mine] -> score mine + round (mine, theirs))
     |> Seq.sum
@@ -85,9 +85,9 @@ let day2_2() =
         | Scissors, Lose -> Paper
         | Scissors, Win -> Rock
         | shape, Draw -> shape
-    File.ReadLines("input_2022_2.txt")
+    File.ReadLines("data/day2.txt")
     |> Seq.map(fun pair ->
-        let [left; right] = pair.Split(',') |> Array.toList
+        let [left; right] = pair.Split(' ') |> Array.toList
         (parseLeft left, parseRight right)
     )
     |> Seq.map(fun decision -> score (pick decision) + round (snd decision))
