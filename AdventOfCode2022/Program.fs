@@ -39,6 +39,7 @@ let day2_1() =
         | "A" -> Rock
         | "B" -> Paper
         | "C" -> Scissors
+        | _ -> failwith "bad input"
     let score = function
         | Rock -> 1
         | Paper -> 2
@@ -53,7 +54,7 @@ let day2_1() =
         | _ -> 3
     File.ReadLines("data/day2.txt")
     |> Seq.map(String.split [" "] >> Seq.map(parse) >> Seq.toList)
-    |> Seq.map(fun [theirs; mine] -> score mine + round (mine, theirs))
+    |> Seq.map(function [theirs; mine] -> score mine + round (mine, theirs) | _ -> failwith "bad input")
     |> Seq.sum
     |> printfn "%d"
 
@@ -67,10 +68,12 @@ let day2_2() =
         | "X" -> Lose
         | "Y" -> Draw
         | "Z" -> Win
+        | _ -> failwith "bad input"
     let parseLeft = function
         | "A" -> Rock
         | "B" -> Paper
         | "C" -> Scissors
+        | _ -> failwith "bad input"
     let score = function
         | Rock -> 1
         | Paper -> 2
@@ -89,8 +92,9 @@ let day2_2() =
         | shape, Draw -> shape
     File.ReadLines("data/day2.txt")
     |> Seq.map(fun pair ->
-        let [| left; right |] = pair.Split(' ')
-        (parseLeft left, parseRight right)
+        match pair.Split(' ') with
+        | [| left; right |] -> (parseLeft left, parseRight right)
+        | _ -> failwith "bad input"
     )
     |> Seq.map(fun decision -> score (pick decision) + round (snd decision))
     |> Seq.sum
@@ -128,14 +132,14 @@ module Day4 =
     let part1() =
         File.ReadLines("data/day4.txt")
         |> Seq.map (String.split [","] >> Seq.map(String.split ["-"] >> Seq.map int >> toList) >> toList)
-        |> Seq.filter (function [[a; b]; [c; d]] -> a <= c && b >= d || a >= c && b <= d)
+        |> Seq.filter (function [[a; b]; [c; d]] -> a <= c && b >= d || a >= c && b <= d | _ -> failwith "bad input")
         |> Seq.length
         |> printfn "Result: %d"
 
     let part2() =
         File.ReadLines("data/day4.txt")
         |> Seq.map (String.split [","] >> Seq.map(String.split ["-"] >> Seq.map int >> toList) >> toList)
-        |> Seq.filter (function [[a; b]; [c; d]] -> b >= c && a <= d)
+        |> Seq.filter (function [[a; b]; [c; d]] -> b >= c && a <= d | _ -> failwith "bad input")
         |> Seq.length
         |> printfn "Result: %d"
 
@@ -152,7 +156,7 @@ module Day5 =
         stacks |> Seq.rev |> Seq.tail |> Seq.iter(fun line ->
             line
             |> Seq.chunkBySize 4
-            |> Seq.map(Seq.toList >> function _ :: ch :: _ -> ch)
+            |> Seq.map(Seq.toList >> function _ :: ch :: _ -> ch | _ -> failwith "bad input")
             |> Seq.mapi(fun index value -> index, value)
             |> Seq.filter(snd >> (<>) ' ')
             |> Seq.iter(fun (index, value) -> state[index].Push(value))
@@ -183,7 +187,7 @@ module Day5 =
         stacks |> Seq.rev |> Seq.tail |> Seq.iter(fun line ->
             line
             |> Seq.chunkBySize 4
-            |> Seq.map(Seq.toList >> function _ :: ch :: _ -> ch)
+            |> Seq.map(Seq.toList >> function _ :: ch :: _ -> ch | _ -> failwith "bad input")
             |> Seq.mapi(fun index value -> index, value)
             |> Seq.filter(snd >> (<>) ' ')
             |> Seq.iter(fun (index, value) -> state[index].Push(value))
@@ -203,6 +207,6 @@ module Day5 =
         state |> map Seq.head |> Seq.toArray |> String |> printfn "%s"
 
 [<EntryPoint>]
-let main argv =
+let main _argv =
     Day5.part2()
     0
