@@ -15,6 +15,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Files", "Solution 
 		LICENSE = LICENSE
 	EndProjectSection
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "AdventOfCode2021", "AdventOfCode2021\AdventOfCode2021.fsproj", "{11EE0F1B-EF1B-4715-B28E-3A5F8B00E6D1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{665879CC-3602-4E6C-9841-52C7772655C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{665879CC-3602-4E6C-9841-52C7772655C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{665879CC-3602-4E6C-9841-52C7772655C6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{11EE0F1B-EF1B-4715-B28E-3A5F8B00E6D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{11EE0F1B-EF1B-4715-B28E-3A5F8B00E6D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{11EE0F1B-EF1B-4715-B28E-3A5F8B00E6D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{11EE0F1B-EF1B-4715-B28E-3A5F8B00E6D1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
