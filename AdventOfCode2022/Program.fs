@@ -2,6 +2,7 @@
 open FSharpPlus
 open System.IO
 open System
+open System.Collections.Generic
 
 let day1_1() =
     File.ReadLines("./data.txt")
@@ -138,7 +139,40 @@ module Day4 =
         |> Seq.length
         |> printfn "Result: %d"
 
+module Day5 =
+    let part1() =
+        let lines = File.ReadAllLines("data/day5.txt")
+        let emptyLine = lines |> findIndex ((=) "")
+        let stacks = lines[0..emptyLine - 1]
+        let instructions = lines[emptyLine + 1..lines.Length - 1]
+        let stackCount = stacks |> Seq.last |> String.split [" "] |> filter ((<>) "") |> Seq.last |> int
+        
+        let state = List.init stackCount (fun _ -> Stack<char>())
+        
+        stacks |> Seq.rev |> Seq.tail |> Seq.iter(fun line ->
+            line
+            |> Seq.chunkBySize 4
+            |> Seq.map(Seq.toList >> function _ :: ch :: _ -> ch)
+            |> Seq.mapi(fun index value -> index, value)
+            |> Seq.filter(snd >> (<>) ' ')
+            |> Seq.iter(fun (index, value) -> state[index].Push(value))
+        )
+        
+        for instruction in instructions do
+            match instruction.Split(' ') |> toList with
+            | _ :: count :: _ :: source :: _:: dest :: _ ->
+                let count = int count
+                let source = int source - 1
+                let dest = int dest - 1
+                for _ in 1..count do
+                    let value = state[source].Pop()
+                    state[dest].Push(value)
+            | x -> failwith $"Invalid line: {x}"
+        
+        state |> map Seq.head |> Seq.toArray |> String |> printfn "%s"
+        
+
 [<EntryPoint>]
 let main argv =
-    Day4.part2()
+    Day5.part1()
     0
