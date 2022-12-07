@@ -206,7 +206,23 @@ module Day5 =
         
         state |> map Seq.head |> Seq.toArray |> String |> printfn "%s"
 
+module Day6 =
+    let findFirstUniqueSequenceOfLength (length: int) (line: string) =
+        Seq.init line.Length (fun index -> line[index .. index + length - 1])
+        |> Seq.findIndex(distinct >> Seq.length >> (=) length)
+        |> (+) length
+        
+    let part1() =
+        File.ReadLines("data/day6.txt")
+        |> Seq.map(findFirstUniqueSequenceOfLength 4)
+        |> Seq.iter (printfn "Result %d")
+
+    let part2() =
+        File.ReadLines("data/day6.txt")
+        |> Seq.map(findFirstUniqueSequenceOfLength 14)
+        |> Seq.iter (printfn "Result %d")
+
 [<EntryPoint>]
 let main _argv =
-    Day5.part2()
+    Day6.part2()
     0
