@@ -222,7 +222,74 @@ module Day6 =
         |> map (findFirstUniqueSequenceOfLength 14)
         |> iter (printfn "Result %d")
 
+module Day7 =
+    type Node =
+        | File of string * int
+        | Directory of string * List<Node>
+        
+    let parseTerminal() =
+        let root = Directory("", List<Node>())
+        let mutable path = Stack<Node>([root])
+        for line in File.ReadLines("data/day7.txt") do
+            match line.Split(' ') |> Seq.toList with
+            | ["$"; "cd"; "/"] ->
+                path <- Stack<Node>([root])
+            | ["$"; "cd"; ".."] ->
+                match path.TryPop() with
+                | true, _ -> ()
+                | false, _ -> failwith "Can't go up the root"
+            | ["$"; "cd"; dirName] ->
+                match path.Peek() with
+                | Directory(_name, children) ->
+                    children |> Seq.tryFind(function
+                        | Directory(name, _children) when name = dirName -> true
+                        | _ -> false
+                    )
+                    |> function
+                        | Some child -> path.Push(child)
+                        | None -> failwith ("Could not find directory" + dirName)
+                | File _ -> failwith "Unreachable"
+            | ["$"; "ls"] ->
+                ()
+            | ["dir"; dirName] ->
+                match path.Peek() with
+                | Directory(_name, children) ->
+                    children.Add(Directory(dirName, List<Node>()))
+                | File _ -> failwith "Unreachable"
+            | [size; fileName] ->
+                match path.Peek() with
+                | Directory(_name, children) ->
+                    children.Add(File(fileName, int size))
+                | File _ -> failwith "Unreachable"
+            | _ -> failwith ("Unknown command " + line)
+        root
+
+    let part1() =
+        let root = parseTerminal()
+            
+        let rec getTotalSize node =
+            match node with
+            | File(_name, size) -> size
+            | Directory(_name, children) -> children |> map getTotalSize |> sum
+
+        let rec getSizes node =
+            seq {
+                match node with
+                | File _ -> ()
+                | Directory(_name, children) ->
+                    yield getTotalSize node
+                    for child in children do yield! getSizes child
+            }
+        
+        getSizes root
+        |> filter ((>) 100_000)
+        |> Seq.sum
+        |> printfn "Result: %d"
+
+    let part2() =
+        ()
+
 [<EntryPoint>]
 let main _argv =
-    Day6.part2()
+    Day7.part1()
     0
