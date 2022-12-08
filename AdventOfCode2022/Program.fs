@@ -264,32 +264,39 @@ module Day7 =
             | _ -> failwith ("Unknown command " + line)
         root
 
+    let rec getTotalSize node =
+        match node with
+        | File(_name, size) -> size
+        | Directory(_name, children) -> children |> map getTotalSize |> sum
+
+    let rec getSizes node =
+        seq {
+            match node with
+            | File _ -> ()
+            | Directory(_name, children) ->
+                yield getTotalSize node
+                for child in children do yield! getSizes child
+        }
+        
     let part1() =
         let root = parseTerminal()
-            
-        let rec getTotalSize node =
-            match node with
-            | File(_name, size) -> size
-            | Directory(_name, children) -> children |> map getTotalSize |> sum
-
-        let rec getSizes node =
-            seq {
-                match node with
-                | File _ -> ()
-                | Directory(_name, children) ->
-                    yield getTotalSize node
-                    for child in children do yield! getSizes child
-            }
-        
         getSizes root
-        |> filter ((>) 100_000)
+        |> filter ((>=) 100_000)
         |> Seq.sum
         |> printfn "Result: %d"
 
     let part2() =
-        ()
+        let root = parseTerminal()
+        let totalSize = getTotalSize root
+        let sizeAvailable = 70000000 - totalSize
+        let sizeToDelete = 30000000 - sizeAvailable
+
+        getSizes root
+        |> filter ((<=) sizeToDelete)
+        |> Seq.min
+        |> printfn "Result: %d"
 
 [<EntryPoint>]
 let main _argv =
-    Day7.part1()
+    Day7.part2()
     0
