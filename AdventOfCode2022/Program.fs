@@ -296,7 +296,34 @@ module Day7 =
         |> Seq.min
         |> printfn "Result: %d"
 
+module Day8 =
+    let checkBefore index (items : int seq) : bool =
+        if index = 0 then true
+        else (items |> Seq.item index) > (items |> take index |> Seq.max)
+    let checkAfter index items =
+        let size = items |> length
+        items |> rev |> checkBefore (size - index - 1)
+    let isVisible x y (map: int list list) =
+        let check index items = checkBefore index items || checkAfter index items
+        map[y] |> check x || map |> List.map (item x) |> check y
+
+    let part1() =
+        let map: int list list =
+            File.ReadLines("data/day8.txt")
+            |> Seq.map (Seq.map int >> toList)
+            |> toList
+        map
+        |> Seq.mapi (fun y -> Seq.mapi (fun x _ -> map |> isVisible x y))
+        |> Seq.map(filter ((=) true) >> length)
+        |> sum
+        |> printfn "Result: %d"
+        
+        
+    let part2() =
+        
+        ()
+
 [<EntryPoint>]
 let main _argv =
-    Day7.part2()
+    Day8.part1()
     0
