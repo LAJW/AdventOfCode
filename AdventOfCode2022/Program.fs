@@ -297,33 +297,51 @@ module Day7 =
         |> printfn "Result: %d"
 
 module Day8 =
-    let checkBefore index (items : int seq) : bool =
-        if index = 0 then true
-        else (items |> Seq.item index) > (items |> take index |> Seq.max)
-    let checkAfter index items =
-        let size = items |> length
-        items |> rev |> checkBefore (size - index - 1)
-    let isVisible x y (map: int list list) =
-        let check index items = checkBefore index items || checkAfter index items
-        map[y] |> check x || map |> List.map (item x) |> check y
-
+    let parse = File.ReadLines >> map (Seq.map (string >> int) >> toList) >> toList
+            
     let part1() =
-        let map: int list list =
-            File.ReadLines("data/day8.txt")
-            |> Seq.map (Seq.map int >> toList)
-            |> toList
+        let checkBefore index (items : int seq) : bool =
+            if index = 0 then true
+            else (items |> Seq.item index) > (items |> take index |> Seq.max)
+            
+        let checkAfter index items =
+            let size = items |> length
+            items |> rev |> checkBefore (size - index - 1)
+            
+        let isVisible x y (map: int list list) =
+            let check index items = checkBefore index items || checkAfter index items
+            map[y] |> check x || map |> List.map (item x) |> check y
+
+        let map = parse("data/day8.txt")
         map
         |> Seq.mapi (fun y -> Seq.mapi (fun x _ -> map |> isVisible x y))
         |> Seq.map(filter ((=) true) >> length)
         |> sum
         |> printfn "Result: %d"
         
-        
     let part2() =
+        let scoreBefore index (items : int seq) : int =
+            if index = 0 then 0
+            else
+                let cur = items |> Seq.item index
+                min index (items |> take index |> rev |> takeWhile ((>) cur) |> length |> (+) 1)
+                
+        let scoreAfter index items =
+            let size = items |> length
+            items |> rev |> scoreBefore (size - index - 1)
         
-        ()
+        let totalScore x y (map: int list list) =
+            let score index items = scoreBefore index items * scoreAfter index items
+            (map[y] |> score x) * (map |> List.map (item x) |> score y)
+            
+        let map = parse("data/day8.txt")
+        map
+        |> Seq.mapi (fun y -> Seq.mapi (fun x _ -> map |> totalScore x y))
+        |> Seq.concat
+        |> Seq.max
+        |> printfn "Result: %d"
 
 [<EntryPoint>]
 let main _argv =
-    Day8.part1()
+    Day8.part2()
     0
