@@ -1,4 +1,6 @@
 ﻿module FSharpPlayground
+open System.Drawing
+open System.Runtime.CompilerServices
 open FSharpPlus
 open System.IO
 open System
@@ -341,7 +343,41 @@ module Day8 =
         |> Seq.max
         |> printfn "Result: %d"
 
+module Day9 =
+    let (|Int'|_|) (str: string) =
+        let mutable value = 0
+        if Int32.TryParse(str, &value) then Some(value)
+        else None
+        
+    let part1() =
+        let mutable s = Size(0, 0)
+        let mutable e = Size(0, 0)
+        let lines = File.ReadLines("data/day9.txt")
+        let map f (s: Size) = Size(f s.Width, f s.Height) 
+        let normalize (v: Size) = map sign v
+
+        seq {
+            yield e
+            for line in lines do
+                match line.Split(" ") with
+                | [| "L"; Int'(amount) |] -> s <- s + Size(-1 * amount, 0)
+                | [| "R"; Int'(amount) |] -> s <- s + Size(amount, 0)
+                | [| "U"; Int'(amount) |] -> s <- s + Size(0, -amount)
+                | [| "D"; Int'(amount) |] -> s <- s + Size(0, amount)
+                | _ -> failwith $"Invalid instruction {line}"
+                
+                while (s - e) <> normalize (s - e) do
+                    e <- e + normalize (s - e)
+                    yield e
+        }
+        |> Seq.distinct
+        |> length
+        |> printfn "%d"
+
+    let part2() =
+        ()
+
 [<EntryPoint>]
 let main _argv =
-    Day8.part2()
+    Day9.part1()
     0
