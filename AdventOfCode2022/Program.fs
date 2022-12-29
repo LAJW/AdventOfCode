@@ -349,35 +349,40 @@ module Day9 =
         if Int32.TryParse(str, &value) then Some(value)
         else None
         
-    let part1() =
+    let map f (s: Size) = Size(f s.Width, f s.Height) 
+    let normalize (v: Size) = map sign v
+    let len (s: Size) = max (abs s.Width) (abs s.Height)
+    let parse (line : String) =
+        match line.Split(" ") with
+        | [| "L"; Int'(amount) |] -> Size(-1 * amount, 0)
+        | [| "R"; Int'(amount) |] -> Size(amount, 0)
+        | [| "U"; Int'(amount) |] -> Size(0, -amount)
+        | [| "D"; Int'(amount) |] -> Size(0, amount)
+        | _ -> failwith $"Invalid instruction {line}"
+
+    let solve file ropeLength =
         let mutable s = Size(0, 0)
         let mutable e = Size(0, 0)
-        let lines = File.ReadLines("data/day9.txt")
-        let map f (s: Size) = Size(f s.Width, f s.Height) 
-        let normalize (v: Size) = map sign v
-
+        let lines = File.ReadLines file
         seq {
             yield e
             for line in lines do
-                match line.Split(" ") with
-                | [| "L"; Int'(amount) |] -> s <- s + Size(-1 * amount, 0)
-                | [| "R"; Int'(amount) |] -> s <- s + Size(amount, 0)
-                | [| "U"; Int'(amount) |] -> s <- s + Size(0, -amount)
-                | [| "D"; Int'(amount) |] -> s <- s + Size(0, amount)
-                | _ -> failwith $"Invalid instruction {line}"
-                
-                while (s - e) <> normalize (s - e) do
+                s <- s + (parse line)
+                while len(s - e) > ropeLength do
                     e <- e + normalize (s - e)
                     yield e
         }
         |> Seq.distinct
         |> length
-        |> printfn "%d"
+        
+    let part1() =
+        solve "data/day9.txt" 1 |> printfn "%d"
 
     let part2() =
-        ()
+        solve "data/day9_example2.txt" 10 |> printfn "%d"
 
 [<EntryPoint>]
 let main _argv =
-    Day9.part1()
+    Day9.part2()
+    
     0
