@@ -342,6 +342,10 @@ module Day8 =
         |> Seq.concat
         |> Seq.max
         |> printfn "Result: %d"
+        
+module Day9 =
+    let part1() =
+        ()
 
 module Day9 =
     let (|Int'|_|) (str: string) =

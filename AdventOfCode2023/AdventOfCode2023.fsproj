@@ -13,10 +13,16 @@
         <Content Include="data2.txt">
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
-        <Content Include="data3.txt" />
+        <Content Include="data3.txt">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+        <Content Include="data4.txt">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
         <Compile Include="Day1.fs" />
         <Compile Include="Day2.fs" />
-        <None Include="Day3.fsx" />
+        <Compile Include="Day3.fs" />
+        <None Include="Day4.fsx" />
     </ItemGroup>
 
     <ItemGroup>
