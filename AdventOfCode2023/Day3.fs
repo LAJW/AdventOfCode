@@ -34,9 +34,9 @@ let isPartDigit x y =
         let offset = [ -1; 0; 1 ]
         Seq.allPairs offset offset
         |> map (fun (ox, oy) -> x + ox, y + oy)
-        |> Seq.filter ((<>) (x, y))
+        |> filter ((<>) (x, y))
         |> choose (fun (x, y) -> tryGet x y)
-        |> Seq.exists isSymbol
+        |> exists isSymbol
     else
         false
 

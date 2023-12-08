@@ -19,10 +19,22 @@
         <Content Include="data4.txt">
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
+        <Content Include="data5.txt">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+        <Content Include="data7.txt" />
+        <Content Include="data8.txt">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
         <Compile Include="Day1.fs" />
         <Compile Include="Day2.fs" />
         <Compile Include="Day3.fs" />
         <None Include="Day4.fsx" />
+        <Compile Include="Day5.fs" />
+        <Compile Include="Day6.fs" />
+        <None Include="Day7.fsx" />
+        <None Include="Day8.fsx" />
+        <Compile Include="Day8.fs" />
     </ItemGroup>
 
     <ItemGroup>
