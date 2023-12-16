@@ -1,4 +1,6 @@
-﻿open System
+﻿module Day9
+
+open System
 open FSharpPlus
 open System.IO
 
