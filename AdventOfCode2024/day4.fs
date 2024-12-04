@@ -4,12 +4,6 @@ open System.Text.RegularExpressions
 open System.IO
 open FSharpPlus
 
-let forex initial cond body =
-    let mutable i = initial
-    while cond(i) do
-        body(i)
-        i <- i + 1
-
 let run1 () =
     let text = File.ReadAllLines "./data4.txt"
     let countXmas line =
@@ -51,12 +45,13 @@ let run1 () =
 let run2 () =
     let text = File.ReadAllLines "./data4.txt"
 
-    let mutable count = 0
     let dim = text.Length
-    for x in 1..dim - 2 do
-        for y in 1..dim - 2 do
-            let s1 = string(text[y - 1][x - 1]) + string(text[y][x]) + string(text[y + 1][x + 1])
-            let s2 = string(text[y + 1][x - 1]) + string(text[y][x]) + string(text[y - 1][x + 1])
-            if (s1 = "MAS" || s1 = "SAM") && (s2 = "MAS" || s2 = "SAM") then
-                count <- count + 1
-    printfn "%d" count
+    let indexes = seq { 1 .. dim - 2 }
+
+    Seq.allPairs indexes indexes
+    |> Seq.filter (fun (x, y) ->
+        let s1 = String.ofList [ text[y - 1][x - 1]; text[y][x]; text[y + 1][x + 1] ]
+        let s2 = String.ofList [ text[y + 1][x - 1]; text[y][x]; text[y - 1][x + 1] ]
+        (s1 = "MAS" || s1 = "SAM") && (s2 = "MAS" || s2 = "SAM"))
+    |> Seq.length
+    |> printfn "%d"
