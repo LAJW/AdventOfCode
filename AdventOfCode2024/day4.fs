@@ -3,43 +3,21 @@ module AdventOfCode2024.day4
 open System.Text.RegularExpressions
 open System.IO
 open FSharpPlus
+open AdventOfCode2024.Utils
 
 let run1 () =
     let text = File.ReadAllLines "./data4.txt"
-    let countXmas line =
-       Regex.Matches(line, "XMAS").Count + Regex.Matches(rev line, "XMAS").Count
-    let horizontal = text |> map countXmas |> Seq.sum
-    
-    let dim = text[0].Length
-    
-    let mutable verticalCount = 0
-    for x in 0..dim - 1 do
-        let mutable str = ""
-        for y in 0..dim - 1 do
-            str <- str + string(text[y][x])
-        printfn "%s" str
-        verticalCount <- verticalCount + countXmas str
-    
-    let mutable count = 0
-    for k in 0 .. dim * 2 do
-        let mutable str = ""
-        for j in 0 .. k do
-            let i = k - j
-            if i < dim && j < dim then
-                str <- str + string(text[i][j])
-        printfn "%s" str
-        count <- count + countXmas str
 
-    for k in 0 .. dim * 2 do
-        let mutable str = ""
-        for j in 0 .. k do
-            let i = k - j
-            if i < dim && j < dim then
-                str <- str + string(text[i][dim - 1 - j])
-        printfn "%s" str
-        count <- count + countXmas str
-        
-    (verticalCount + count + horizontal) |> printfn "%d"
+    let countXmas line =
+        Regex.Matches(line, "XMAS").Count + Regex.Matches(rev line, "XMAS").Count
+
+    let grid = Grid text
+
+    [ toSeq text; grid.verticalSlices; grid.DiagonalUp; grid.DiagonalDown ]
+    |> Seq.concat
+    |> map countXmas
+    |> Seq.sum
+    |> printfn "%d"
 
 
 let run2 () =

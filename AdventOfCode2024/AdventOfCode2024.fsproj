@@ -18,6 +18,7 @@
         <Content Include="data4.txt">
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
+        <Compile Include="Utils.fs" />
         <Compile Include="day1.fs" />
         <Compile Include="day2.fs" />
         <Compile Include="day3.fs" />
