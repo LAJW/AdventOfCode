@@ -18,7 +18,7 @@ type Grid(text: string array) =
             }
             |> String.ofSeq)
 
-    member _.verticalSlices =
+    member _.Vertical =
         seq { 0 .. width - 1 }
         |> map (fun x -> seq { 0 .. height - 1 } |> Seq.map (fun y -> text[y][x]) |> String.ofSeq)
 

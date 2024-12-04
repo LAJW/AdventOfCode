@@ -13,7 +13,7 @@ let run1 () =
 
     let grid = Grid text
 
-    [ toSeq text; grid.verticalSlices; grid.DiagonalUp; grid.DiagonalDown ]
+    [ toSeq text; grid.Vertical; grid.DiagonalUp; grid.DiagonalDown ]
     |> Seq.concat
     |> map countXmas
     |> Seq.sum
