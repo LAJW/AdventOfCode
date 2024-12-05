@@ -18,7 +18,9 @@
         <Content Include="data4.txt">
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
-        <Content Include="data5.txt" />
+        <Content Include="data5.txt">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
         <Compile Include="Utils.fs" />
         <Compile Include="day1.fs" />
         <Compile Include="day2.fs" />
