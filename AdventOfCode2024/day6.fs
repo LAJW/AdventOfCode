@@ -6,85 +6,110 @@ open System.Collections.Generic
 open System.IO
 open FSharpPlus
 
-let turnRight(dir: int * int) =
-    match dir with
-    | 1, 0 -> 0, 1
-    | 0, 1 -> -1, 0
-    | -1, 0 -> 0, -1
-    | 0, -1 -> 1, 0
-    | _ -> failwith "function only works with directional vectors"
-    
-let add(a: int * int) (b: int * int) =
-    let xa, ya = a
-    let xb, yb = b
-    (xa + xb, ya + yb)
+type Pos =
+    struct
+        val X: int
+        val Y: int
 
-let tryGet (pos : int * int) (grid : string array) =
-    let x, y = pos
-    if x >= 0 && y >= 0 && x < grid[0].Length && y < grid.Length then
-        Some(grid[y][x])
-    else None
-    
+        new(x: int, y: int) = { X = x; Y = y }
+
+        member this.asPair = struct (this.X, this.Y)
+    end
+
+let turnRight (dir: Pos) =
+    match dir.asPair with
+    | 1, 0 -> Pos(0, 1)
+    | 0, 1 -> Pos(-1, 0)
+    | -1, 0 -> Pos(0, -1)
+    | 0, -1 -> Pos(1, 0)
+    | _ -> failwith "function only works with directional vectors"
+
+let add (a: Pos) (b: Pos) = Pos(a.X + b.X, a.Y + b.Y)
+
+let tryGet (pos: Pos) (grid: string array) =
+    if pos.X >= 0 && pos.Y >= 0 && pos.X < grid[0].Length && pos.Y < grid.Length then
+        Some(grid[pos.Y][pos.X])
+    else
+        None
+
 let arrowToDirection ch =
     match ch with
-    | '^' -> 0, -1
-    | '>' -> 0, 1
-    | '<' -> -1, 0
-    | 'v' -> 0, 1
+    | '^' -> Pos(0, -1)
+    | '>' -> Pos(0, 1)
+    | '<' -> Pos(-1, 0)
+    | 'v' -> Pos(0, 1)
     | _ -> failwith "bad starting position"
 
-let getStartingPosition (grid : string array) =
-    seq {0..grid.Length - 1} |> Seq.pick (fun y ->
-        seq {0..grid[y].Length - 1} |> Seq.tryPick (fun x ->
-            let pos = x, y
-            match grid |> tryGet pos |> Option.get with
-            | '^' | '>' | '<' | 'v' -> Some(pos)
-            | _ -> None
-        )
-    )
+let getStartingPosition (grid: string array) =
+    seq { 0 .. grid.Length - 1 }
+    |> Seq.pick (fun y ->
+        seq { 0 .. grid[y].Length - 1 }
+        |> Seq.tryPick (fun x ->
+            let pos = Pos(x, y)
 
-let walk (startingPosition : int * int) (startingDirection : int * int) (grid : string array)= 
+            match grid |> tryGet pos |> Option.get with
+            | '^'
+            | '>'
+            | '<'
+            | 'v' -> Some(pos)
+            | _ -> None))
+
+let walk (startingPosition: Pos) (startingDirection: Pos) (grid: string array) =
     let mutable direction = startingDirection
     let mutable pos = startingPosition
-    let visited = HashSet<(int * int) * (int * int)>()
-    while grid |> tryGet pos |> Option.isSome && not(visited.Contains(pos, direction)) do
+    let visited = HashSet<struct(Pos * Pos)>()
+
+    while grid |> tryGet pos |> Option.isSome && not (visited.Contains(pos, direction)) do
         let next = pos |> add direction
+
         match grid |> tryGet next with
-        | Some('#') ->
-            direction <- direction |> turnRight
+        | Some('#') -> direction <- direction |> turnRight
         | _ ->
             visited.Add(pos, direction) |> ignore
             pos <- pos |> add direction
+
     visited, pos
 
 let run1 () =
     let grid = File.ReadAllLines("data6.txt")
     let startingPosition = getStartingPosition grid
-    let startingDirection = grid |> tryGet startingPosition |> Option.get |> arrowToDirection
-    let positions = grid |> walk startingPosition startingDirection |> fst |> Seq.map fst |> Set
+
+    let startingDirection =
+        grid |> tryGet startingPosition |> Option.get |> arrowToDirection
+
+    let positions =
+        grid |> walk startingPosition startingDirection |> fst |> Seq.map (fun struct(a, b) -> a) |> Set
+
     printfn "%d" positions.Count
-   
+
 let run2 () =
     let grid = File.ReadAllLines("data6.txt")
     let startingPosition = getStartingPosition grid
-    let startingDirection = grid |> tryGet startingPosition |> Option.get |> arrowToDirection
-    let positions = grid |> walk startingPosition startingDirection |> fst |> Seq.map fst |> Set
 
-    let loops(grid : string array) =
+    let startingDirection =
+        grid |> tryGet startingPosition |> Option.get |> arrowToDirection
+
+    let positions =
+        grid |> walk startingPosition startingDirection |> fst |> Seq.map (fun struct (a, b) -> a) |> Set
+
+    let loops (grid: string array) =
         let finalPos = grid |> walk startingPosition startingDirection |> snd
         grid |> tryGet finalPos |> Option.isSome
 
-    let loopingPositions = seq {
-        for x, y in positions do
-            let newGrid =
-                grid |> Array.mapi (fun i row ->
-                    if i = y then
-                        row |> Seq.mapi (fun j cell -> if j = x then '#' else cell) |> String.ofSeq
-                    else row
-                )
-            if loops newGrid then
-                yield x, y
-    }
-        
+    let loopingPositions =
+        seq {
+            for pos in positions do
+                let newGrid =
+                    grid
+                    |> Array.mapi (fun i row ->
+                        if i = pos.Y then
+                            row |> Seq.mapi (fun j cell -> if j = pos.X then '#' else cell) |> String.ofSeq
+                        else
+                            row)
+
+                if loops newGrid then
+                    yield pos
+        }
+
     let count = Seq.length loopingPositions
     printfn "%d" count
