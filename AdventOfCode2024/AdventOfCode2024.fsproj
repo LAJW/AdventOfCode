@@ -21,12 +21,16 @@
         <Content Include="data5.txt">
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
+        <Content Include="data6.txt">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
         <Compile Include="Utils.fs" />
         <Compile Include="day1.fs" />
         <Compile Include="day2.fs" />
         <Compile Include="day3.fs" />
         <Compile Include="day4.fs" />
         <Compile Include="day5.fs" />
+        <Compile Include="day6.fs" />
     </ItemGroup>
 
     <ItemGroup>
