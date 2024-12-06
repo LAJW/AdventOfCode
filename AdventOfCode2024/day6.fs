@@ -33,73 +33,57 @@ let arrowToDirection ch =
     | 'v' -> 0, 1
     | _ -> failwith "bad starting position"
 
+let getStartingPosition (grid : string array) =
+    seq {0..grid.Length - 1} |> Seq.pick (fun y ->
+        seq {0..grid[y].Length - 1} |> Seq.tryPick (fun x ->
+            let pos = x, y
+            match grid |> tryGet pos |> Option.get with
+            | '^' | '>' | '<' | 'v' -> Some(pos)
+            | _ -> None
+        )
+    )
+
+let walk (startingPosition : int * int) (startingDirection : int * int) (grid : string array)= 
+    let mutable direction = startingDirection
+    let mutable pos = startingPosition
+    let visited = HashSet<(int * int) * (int * int)>()
+    while grid |> tryGet pos |> Option.isSome && not(visited.Contains(pos, direction)) do
+        let next = pos |> add direction
+        match grid |> tryGet next with
+        | Some('#') ->
+            direction <- direction |> turnRight
+        | _ ->
+            visited.Add(pos, direction) |> ignore
+            pos <- pos |> add direction
+    visited, pos
+
 let run1 () =
     let grid = File.ReadAllLines("data6.txt")
-    let startingPosition =
-        seq {0..grid.Length - 1} |> Seq.pick (fun y ->
-            seq {0..grid[y].Length - 1} |> Seq.tryPick (fun x ->
-                let pos = x, y
-                match grid |> tryGet pos |> Option.get with
-                | '^' | '>' | '<' | 'v' -> Some(pos)
-                | _ -> None
-            )
-        )
-    let mutable direction = grid |> tryGet startingPosition |> Option.get |> arrowToDirection
-    let mutable pos = startingPosition
-    let positions = seq {
-        while grid |> tryGet pos |> Option.isSome do
-            let next = pos |> add direction
-            match grid |> tryGet next with
-            | Some('#') ->
-                direction <- direction |> turnRight
-            | _ ->
-                yield pos
-                pos <- pos |> add direction
-    }
-        
-    let count = Set(positions).Count
-    printfn "%d" count
+    let startingPosition = getStartingPosition grid
+    let startingDirection = grid |> tryGet startingPosition |> Option.get |> arrowToDirection
+    let positions = grid |> walk startingPosition startingDirection |> fst |> Seq.map fst |> Set
+    printfn "%d" positions.Count
    
 let run2 () =
     let grid = File.ReadAllLines("data6.txt")
-    let startingPosition =
-        seq {0..grid.Length - 1} |> Seq.pick (fun y ->
-            seq {0..grid[y].Length - 1} |> Seq.tryPick (fun x ->
-                let pos = x, y
-                match grid |> tryGet pos |> Option.get with
-                | '^' | '>' | '<' | 'v' -> Some(pos)
-                | _ -> None
-            )
-        )
+    let startingPosition = getStartingPosition grid
     let startingDirection = grid |> tryGet startingPosition |> Option.get |> arrowToDirection
-    
+    let positions = grid |> walk startingPosition startingDirection |> fst |> Seq.map fst |> Set
 
     let loops(grid : string array) =
-        let mutable direction = startingDirection
-        let mutable pos = startingPosition
-        let visited = HashSet<(int * int) * (int * int)>()
-        while grid |> tryGet pos |> Option.isSome && not(visited.Contains(pos, direction)) do
-            let next = pos |> add direction
-            match grid |> tryGet next with
-            | Some('#') ->
-                direction <- direction |> turnRight
-            | _ ->
-                visited.Add(pos, direction)
-                pos <- pos |> add direction
-        grid |> tryGet pos |> Option.isSome
+        let finalPos = grid |> walk startingPosition startingDirection |> snd
+        grid |> tryGet finalPos |> Option.isSome
 
     let loopingPositions = seq {
-        for y in 0..grid.Length - 1 do
-            for x in 0..grid[y].Length - 1 do
-                if grid |> tryGet (x, y) = Some '.' then
-                    let newGrid =
-                        grid |> Array.mapi (fun i row ->
-                            if i = y then
-                                row |> Seq.mapi (fun j cell -> if j = x then '#' else cell) |> String.ofSeq
-                            else row
-                        )
-                    if loops newGrid then
-                        yield x, y
+        for x, y in positions do
+            let newGrid =
+                grid |> Array.mapi (fun i row ->
+                    if i = y then
+                        row |> Seq.mapi (fun j cell -> if j = x then '#' else cell) |> String.ofSeq
+                    else row
+                )
+            if loops newGrid then
+                yield x, y
     }
         
     let count = Seq.length loopingPositions
