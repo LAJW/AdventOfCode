@@ -54,10 +54,9 @@ let getStartingPosition (grid: char array array) =
             | 'v' -> Some(pos)
             | _ -> None))
 
-let walk (startingPosition: Pos) (startingDirection: Pos) (grid: char array array) =
+let walk (startingPosition: Pos) (startingDirection: Pos) (visited: HashSet<struct (Pos * Pos)>) (grid: char array array) =
     let mutable direction = startingDirection
     let mutable pos = startingPosition
-    let visited = HashSet<struct (Pos * Pos)>()
     visited.EnsureCapacity(5000) |> ignore // Typical path has about 4700 steps
 
     while grid |> tryGet pos |> ValueOption.isSome && not (visited.Contains(pos, direction)) do
@@ -78,9 +77,10 @@ let run1 () =
     let startingDirection =
         grid |> tryGet startingPosition |> ValueOption.get |> arrowToDirection
 
+    let visited = HashSet<struct (Pos * Pos)>()
     let positions =
         grid
-        |> walk startingPosition startingDirection
+        |> walk startingPosition startingDirection visited
         |> fst
         |> Seq.map (fun struct (a, _) -> a)
         |> Set
@@ -94,15 +94,16 @@ let run2 () =
     let startingDirection =
         grid |> tryGet startingPosition |> ValueOption.get |> arrowToDirection
 
+    let visited = HashSet<struct (Pos * Pos)>()
     let positions =
         grid
-        |> walk startingPosition startingDirection
+        |> walk startingPosition startingDirection visited
         |> fst
         |> Seq.map (fun struct (a, _) -> a)
         |> Set
 
     let loops (grid: char array array) =
-        let set, finalPos = grid |> walk startingPosition startingDirection
+        let set, finalPos = grid |> walk startingPosition startingDirection visited
         set.Clear() // Free memory from the previous iteration
         grid |> tryGet finalPos |> ValueOption.isSome
 
