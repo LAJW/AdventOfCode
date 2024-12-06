@@ -6,6 +6,7 @@ open System.Collections.Generic
 open System.IO
 open FSharpPlus
 
+// Tuples allocate on the heap
 type Pos =
     struct
         val X: int
@@ -26,7 +27,7 @@ let turnRight (dir: Pos) =
 
 let add (a: Pos) (b: Pos) = Pos(a.X + b.X, a.Y + b.Y)
 
-let tryGet (pos: Pos) (grid: string array) =
+let tryGet (pos: Pos) (grid: char array array) =
     if pos.X >= 0 && pos.Y >= 0 && pos.X < grid[0].Length && pos.Y < grid.Length then
         Some(grid[pos.Y][pos.X])
     else
@@ -40,7 +41,7 @@ let arrowToDirection ch =
     | 'v' -> Pos(0, 1)
     | _ -> failwith "bad starting position"
 
-let getStartingPosition (grid: string array) =
+let getStartingPosition (grid: char array array) =
     seq { 0 .. grid.Length - 1 }
     |> Seq.pick (fun y ->
         seq { 0 .. grid[y].Length - 1 }
@@ -54,10 +55,10 @@ let getStartingPosition (grid: string array) =
             | 'v' -> Some(pos)
             | _ -> None))
 
-let walk (startingPosition: Pos) (startingDirection: Pos) (grid: string array) =
+let walk (startingPosition: Pos) (startingDirection: Pos) (grid: char array array) =
     let mutable direction = startingDirection
     let mutable pos = startingPosition
-    let visited = HashSet<struct(Pos * Pos)>()
+    let visited = HashSet<struct (Pos * Pos)>()
 
     while grid |> tryGet pos |> Option.isSome && not (visited.Contains(pos, direction)) do
         let next = pos |> add direction
@@ -71,45 +72,47 @@ let walk (startingPosition: Pos) (startingDirection: Pos) (grid: string array) =
     visited, pos
 
 let run1 () =
-    let grid = File.ReadAllLines("data6.txt")
+    let grid = File.ReadAllLines("data6.txt") |> Array.map String.toArray
     let startingPosition = getStartingPosition grid
 
     let startingDirection =
         grid |> tryGet startingPosition |> Option.get |> arrowToDirection
 
     let positions =
-        grid |> walk startingPosition startingDirection |> fst |> Seq.map (fun struct(a, b) -> a) |> Set
+        grid
+        |> walk startingPosition startingDirection
+        |> fst
+        |> Seq.map (fun struct (a, b) -> a)
+        |> Set
 
     printfn "%d" positions.Count
 
 let run2 () =
-    let grid = File.ReadAllLines("data6.txt")
+    let grid = File.ReadAllLines("data6.txt") |> Array.map String.toArray
     let startingPosition = getStartingPosition grid
 
     let startingDirection =
         grid |> tryGet startingPosition |> Option.get |> arrowToDirection
 
     let positions =
-        grid |> walk startingPosition startingDirection |> fst |> Seq.map (fun struct (a, b) -> a) |> Set
+        grid
+        |> walk startingPosition startingDirection
+        |> fst
+        |> Seq.map (fun struct (a, b) -> a)
+        |> Set
 
-    let loops (grid: string array) =
+    let loops (grid: char array array) =
         let finalPos = grid |> walk startingPosition startingDirection |> snd
         grid |> tryGet finalPos |> Option.isSome
 
-    let loopingPositions =
-        seq {
-            for pos in positions do
-                let newGrid =
-                    grid
-                    |> Array.mapi (fun i row ->
-                        if i = pos.Y then
-                            row |> Seq.mapi (fun j cell -> if j = pos.X then '#' else cell) |> String.ofSeq
-                        else
-                            row)
+    let loopingPositionCount =
+        positions
+        |> Seq.filter (fun pos ->
+            let original = grid[pos.Y][pos.X]
+            grid[pos.Y][pos.X] <- '#'
+            let doesLoop = loops grid
+            grid[pos.Y][pos.X] <- original
+            doesLoop)
+        |> Seq.length
 
-                if loops newGrid then
-                    yield pos
-        }
-
-    let count = Seq.length loopingPositions
-    printfn "%d" count
+    printfn "%d" loopingPositionCount
