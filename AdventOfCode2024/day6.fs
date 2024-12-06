@@ -1,7 +1,6 @@
 module AdventOfCode2024.day6
 
 // #r "nuget: FSharpPlus"
-open System
 open System.Collections.Generic
 open System.IO
 open FSharpPlus
@@ -83,10 +82,10 @@ let run1 () =
         grid
         |> walk startingPosition startingDirection
         |> fst
-        |> Seq.map (fun struct (a, b) -> a)
+        |> Seq.map (fun struct (a, _) -> a)
         |> Set
 
-    printfn "%d" positions.Count
+    printfn $"%d{positions.Count}"
 
 let run2 () =
     let grid = File.ReadAllLines("data6.txt") |> Array.map String.toArray
@@ -99,7 +98,7 @@ let run2 () =
         grid
         |> walk startingPosition startingDirection
         |> fst
-        |> Seq.map (fun struct (a, b) -> a)
+        |> Seq.map (fun struct (a, _) -> a)
         |> Set
 
     let loops (grid: char array array) =
@@ -117,4 +116,4 @@ let run2 () =
             doesLoop)
         |> Seq.length
 
-    printfn "%d" loopingPositionCount
+    printfn $"%d{loopingPositionCount}"
