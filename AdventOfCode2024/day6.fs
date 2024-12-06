@@ -29,9 +29,9 @@ let add (a: Pos) (b: Pos) = Pos(a.X + b.X, a.Y + b.Y)
 
 let tryGet (pos: Pos) (grid: char array array) =
     if pos.X >= 0 && pos.Y >= 0 && pos.X < grid[0].Length && pos.Y < grid.Length then
-        Some(grid[pos.Y][pos.X])
+        ValueSome(grid[pos.Y][pos.X])
     else
-        None
+        ValueNone
 
 let arrowToDirection ch =
     match ch with
@@ -48,7 +48,7 @@ let getStartingPosition (grid: char array array) =
         |> Seq.tryPick (fun x ->
             let pos = Pos(x, y)
 
-            match grid |> tryGet pos |> Option.get with
+            match grid |> tryGet pos |> ValueOption.get with
             | '^'
             | '>'
             | '<'
@@ -59,12 +59,13 @@ let walk (startingPosition: Pos) (startingDirection: Pos) (grid: char array arra
     let mutable direction = startingDirection
     let mutable pos = startingPosition
     let visited = HashSet<struct (Pos * Pos)>()
+    visited.EnsureCapacity(5000) |> ignore // Typical path has about 4700 steps
 
-    while grid |> tryGet pos |> Option.isSome && not (visited.Contains(pos, direction)) do
+    while grid |> tryGet pos |> ValueOption.isSome && not (visited.Contains(pos, direction)) do
         let next = pos |> add direction
 
         match grid |> tryGet next with
-        | Some('#') -> direction <- direction |> turnRight
+        | ValueSome('#') -> direction <- direction |> turnRight
         | _ ->
             visited.Add(pos, direction) |> ignore
             pos <- pos |> add direction
@@ -76,7 +77,7 @@ let run1 () =
     let startingPosition = getStartingPosition grid
 
     let startingDirection =
-        grid |> tryGet startingPosition |> Option.get |> arrowToDirection
+        grid |> tryGet startingPosition |> ValueOption.get |> arrowToDirection
 
     let positions =
         grid
@@ -92,7 +93,7 @@ let run2 () =
     let startingPosition = getStartingPosition grid
 
     let startingDirection =
-        grid |> tryGet startingPosition |> Option.get |> arrowToDirection
+        grid |> tryGet startingPosition |> ValueOption.get |> arrowToDirection
 
     let positions =
         grid
@@ -102,8 +103,9 @@ let run2 () =
         |> Set
 
     let loops (grid: char array array) =
-        let finalPos = grid |> walk startingPosition startingDirection |> snd
-        grid |> tryGet finalPos |> Option.isSome
+        let set, finalPos = grid |> walk startingPosition startingDirection
+        set.Clear() // Free memory from the previous iteration
+        grid |> tryGet finalPos |> ValueOption.isSome
 
     let loopingPositionCount =
         positions
