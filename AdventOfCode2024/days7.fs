@@ -1,71 +1,27 @@
 module AdventOfCode2024.daya7
 
-// #r "nuget: FSharpPlus"
-open System
 open System.IO
-open System.Linq.Expressions
 open FSharpPlus
 
-type Node =
-    | Value of int64
-    | Add
-    | Mul
-    | Concat
+let concat (a : int64) (b: int64) = int64(string a + string b)
 
-let rec increment (counter: Node list) =
-    match counter with
-    | [] -> []
-    | Add :: tail -> Mul :: tail
-    | Mul :: tail -> Concat :: tail
-    | Concat :: tail -> Add :: (increment tail)
-    | s -> failwith ("Bad counter" + s.ToString())
+let rec canDo (ops : (int64 -> int64 -> int64) list) (expected : int64) (numbers : int64 list) =
+    match numbers with
+    | [] -> false
+    | [value] -> expected = value
+    | a :: b :: rest -> ops |> List.exists (fun op -> canDo ops expected (op a b :: rest))
 
-let rec execute (expr: Node list) =
-    match expr with
-    | [ Value a ] -> [ Value a ]
-    | Value a :: Add :: Value b :: rest -> Value(a + b) :: rest |> execute
-    | Value a :: Mul :: Value b :: rest -> Value(a * b) :: rest |> execute
-    | Value a :: Concat :: Value b :: rest -> Value(int64 (string a + string b)) :: rest |> execute
-    | s -> failwith ("Bad expression" + s.ToString())
+let solve canDo =
+    File.ReadAllLines("data7.txt")
+    |> Seq.map (fun line ->
+        let [| controlStr; numbersStr |] = line.Split(": ")
+        let control = int64 controlStr
+        let numbers = numbersStr.Split(" ") |> Seq.map int64 |> toList
 
-let run1 () =
-    let lines = File.ReadAllLines("data7.txt")
+        if canDo control numbers then control else 0 
+    )
+    |> Seq.sum
+    |> printfn "%d"
 
-    let count =
-        lines
-        |> Seq.map (fun line ->
-            let [| controlStr; numbersStr |] = line.Split(": ")
-            let control = int64 controlStr
-            let numbers = numbersStr.Split(" ") |> Seq.map (int64 >> Value) |> toList
-
-            let counter =
-                seq { 0 .. numbers.Length - 2 } |> Seq.map (fun _ -> Add) |> Seq.toList
-
-            let combinations =
-                (counter, seq { 0 .. (pown 3 counter.Length) - 2 })
-                ||> Seq.scan (fun state i -> increment state)
-
-            let value =
-                combinations
-                |> Seq.exists (fun operators ->
-                    let expression =
-                        seq {
-                            yield numbers[0]
-
-                            for i in 1 .. numbers.Length - 1 do
-                                yield operators[i - 1]
-                                yield numbers[i]
-                        }
-                        |> toList
-
-                    let result =
-                        match execute expression with
-                        | [ Value x ] -> x
-
-                    result = control)
-
-            if value then control else 0)
-        |> Seq.sum
-
-    printfn "%d" count
-    ()
+let run1() = solve (canDo [(+); (*)])
+let run2() = solve (canDo [(+); (*); concat])
