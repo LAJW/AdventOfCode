@@ -10,12 +10,14 @@ type Node =
     | Value of int64
     | Add
     | Mul
+    | Concat
 
 let rec increment (counter: Node list) =
     match counter with
     | [] -> []
     | Add :: tail -> Mul :: tail
-    | Mul :: tail -> Add :: (increment tail)
+    | Mul :: tail -> Concat :: tail
+    | Concat :: tail -> Add :: (increment tail)
     | s -> failwith ("Bad counter" + s.ToString())
 
 let rec execute (expr: Node list) =
@@ -23,6 +25,7 @@ let rec execute (expr: Node list) =
     | [ Value a ] -> [ Value a ]
     | Value a :: Add :: Value b :: rest -> Value(a + b) :: rest |> execute
     | Value a :: Mul :: Value b :: rest -> Value(a * b) :: rest |> execute
+    | Value a :: Concat :: Value b :: rest -> Value(int64 (string a + string b)) :: rest |> execute
     | s -> failwith ("Bad expression" + s.ToString())
 
 let run1 () =
@@ -34,13 +37,13 @@ let run1 () =
             let [| controlStr; numbersStr |] = line.Split(": ")
             let control = int64 controlStr
             let numbers = numbersStr.Split(" ") |> Seq.map (int64 >> Value) |> toList
+
             let counter =
                 seq { 0 .. numbers.Length - 2 } |> Seq.map (fun _ -> Add) |> Seq.toList
 
             let combinations =
-                (counter, seq { 0 .. (pown 2 counter.Length) - 2 })
+                (counter, seq { 0 .. (pown 3 counter.Length) - 2 })
                 ||> Seq.scan (fun state i -> increment state)
-                |> toList
 
             let value =
                 combinations
@@ -60,6 +63,7 @@ let run1 () =
                         | [ Value x ] -> x
 
                     result = control)
+
             if value then control else 0)
         |> Seq.sum
 
