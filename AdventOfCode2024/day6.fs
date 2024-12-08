@@ -1,5 +1,6 @@
 module AdventOfCode2024.day6
 
+open System
 open System.Collections.Generic
 open System.IO
 open AdventOfCode2024.Utils
@@ -63,6 +64,7 @@ let run1 () =
     printfn $"%d{positions.Count}"
 
 let run2 () =
+    let startTime = DateTime.Now
     let grid = File.ReadAllLines("data6.txt") |> Grid.fromLines
     let startingPosition = getStartingPosition grid
     let startingDirection = grid[startingPosition] |> arrowToDirection
@@ -89,5 +91,7 @@ let run2 () =
             grid[pos] <- original
             doesLoop)
         |> Seq.length
+        
+    let duration = DateTime.Now - startTime
 
-    printfn $"%d{loopingPositionCount}"
+    printfn $"%d{loopingPositionCount} {duration}"

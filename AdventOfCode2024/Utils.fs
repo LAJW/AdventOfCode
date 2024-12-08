@@ -19,10 +19,10 @@ type Vec =
         member this.asPair = struct (this.X, this.Y)
     end
 
-    static member (+)(a: Vec, b: Vec) = Vec(a.X + b.X, a.Y + b.Y)
-    static member (-)(a: Vec, b: Vec) = Vec(a.X - b.X, a.Y - b.Y)
-    static member (*)(a: Vec, b: int) = Vec(a.X * b, a.Y * b)
-    static member (*)(b: int, a: Vec) = Vec(a.X * b, a.Y * b)
+    static member inline (+)(a: Vec, b: Vec) = Vec(a.X + b.X, a.Y + b.Y)
+    static member inline (-)(a: Vec, b: Vec) = Vec(a.X - b.X, a.Y - b.Y)
+    static member inline (*)(a: Vec, b: int) = Vec(a.X * b, a.Y * b)
+    static member inline (*)(b: int, a: Vec) = Vec(a.X * b, a.Y * b)
 
 
 type Grid<'T> =
@@ -34,8 +34,8 @@ type Grid<'T> =
     member this.Item
         with get (index: Vec) = this.Data[index.Y][index.X]
         and set (index: Vec) (value: 'T) = this.Data[index.Y][index.X] <- value
-    
-    member this.HasIndex (pos: Vec) =
+
+    member this.HasIndex(pos: Vec) =
         pos.X >= 0 && pos.Y >= 0 && pos.X < this.Width && pos.Y < this.Height
 
 module Grid =
@@ -48,8 +48,7 @@ module Grid =
     let enumerate (this: Grid<'T>) =
         this |> indices |> Seq.map (fun index -> index, this[index])
 
-    let hasIndex (pos: Vec) (this: Grid<'T>) =
-        this.HasIndex pos
+    let hasIndex (pos: Vec) (this: Grid<'T>) = this.HasIndex pos
 
     let tryGet (pos: Vec) (this: 'T Grid) =
         if this |> hasIndex pos then
