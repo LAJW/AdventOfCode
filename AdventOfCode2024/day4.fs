@@ -11,7 +11,7 @@ let run1 () =
     let countXmas line =
         Regex.Matches(line, "XMAS").Count + Regex.Matches(rev line, "XMAS").Count
 
-    let grid = Grid text
+    let grid = Grid1 text
 
     [ toSeq text; grid.Vertical; grid.DiagonalUp; grid.DiagonalDown ]
     |> Seq.concat

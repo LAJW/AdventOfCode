@@ -4,7 +4,7 @@ module AdventOfCode2024.day6
 open System.Collections.Generic
 open System.IO
 open FSharpPlus
-open AdventOfCode2024.Utils.Vec
+open AdventOfCode2024.Utils
 
 let turnRight (dir: Vec) =
     match dir.asPair with
