@@ -26,8 +26,8 @@ type Grid(text: string array) =
 
     member _.DiagonalDown = diagonal (fun j -> width - 1 - j)
 
-module Pos =
-    type Pos =
+module Vec =
+    type Vec =
         struct // Tuples allocate on the heap
             val X: int
             val Y: int
@@ -36,9 +36,9 @@ module Pos =
 
             member this.asPair = struct (this.X, this.Y)
         end
-        static member (+) (a: Pos, b: Pos) = Pos(a.X + b.X, a.Y + b.Y)
-        static member (-) (a: Pos, b: Pos) = Pos(a.X - b.X, a.Y - b.Y)
-        static member (*) (a: Pos, b: int) = Pos(a.X * b, a.Y * b)
-        static member (*) (b: int, a: Pos) = Pos(a.X * b, a.Y * b)
+        static member (+) (a: Vec, b: Vec) = Vec(a.X + b.X, a.Y + b.Y)
+        static member (-) (a: Vec, b: Vec) = Vec(a.X - b.X, a.Y - b.Y)
+        static member (*) (a: Vec, b: int) = Vec(a.X * b, a.Y * b)
+        static member (*) (b: int, a: Vec) = Vec(a.X * b, a.Y * b)
 
-    let add (a: Pos) (b: Pos) = Pos(a.X + b.X, a.Y + b.Y)
+    let add (a: Vec) (b: Vec) = Vec(a.X + b.X, a.Y + b.Y)

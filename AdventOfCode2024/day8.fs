@@ -3,10 +3,10 @@ module AdventOfCode2024.day8
 open System
 open System.IO
 open FSharpPlus
-open AdventOfCode2024.Utils.Pos
+open AdventOfCode2024.Utils.Vec
 
 
-let contains (pos: Pos) (grid: string array) =
+let contains (pos: Vec) (grid: string array) =
     (pos.X >= 0 && pos.Y >= 0 && pos.X < grid[0].Length && pos.Y < grid.Length)
 
 let isAlnum letter =
@@ -17,7 +17,7 @@ let run1 () =
 
     let map =
         Seq.allPairs (Seq.init lines[0].Length id) (Seq.init lines.Length id)
-        |> Seq.map Pos
+        |> Seq.map Vec
         |> Seq.choose (fun pos ->
             let node = lines[pos.X][pos.Y]
 
@@ -56,7 +56,7 @@ let run2 () =
 
     let map =
         Seq.allPairs (Seq.init lines[0].Length id) (Seq.init lines.Length id)
-        |> Seq.map Pos
+        |> Seq.map Vec
         |> Seq.choose (fun pos ->
             let node = lines[pos.X][pos.Y]
 

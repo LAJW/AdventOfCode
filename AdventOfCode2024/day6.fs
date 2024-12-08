@@ -4,17 +4,17 @@ module AdventOfCode2024.day6
 open System.Collections.Generic
 open System.IO
 open FSharpPlus
-open AdventOfCode2024.Utils.Pos
+open AdventOfCode2024.Utils.Vec
 
-let turnRight (dir: Pos) =
+let turnRight (dir: Vec) =
     match dir.asPair with
-    | 1, 0 -> Pos(0, 1)
-    | 0, 1 -> Pos(-1, 0)
-    | -1, 0 -> Pos(0, -1)
-    | 0, -1 -> Pos(1, 0)
+    | 1, 0 -> Vec(0, 1)
+    | 0, 1 -> Vec(-1, 0)
+    | -1, 0 -> Vec(0, -1)
+    | 0, -1 -> Vec(1, 0)
     | _ -> failwith "function only works with directional vectors"
 
-let tryGet (pos: Pos) (grid: char array array) =
+let tryGet (pos: Vec) (grid: char array array) =
     if pos.X >= 0 && pos.Y >= 0 && pos.X < grid[0].Length && pos.Y < grid.Length then
         ValueSome(grid[pos.Y][pos.X])
     else
@@ -22,10 +22,10 @@ let tryGet (pos: Pos) (grid: char array array) =
 
 let arrowToDirection ch =
     match ch with
-    | '^' -> Pos(0, -1)
-    | '>' -> Pos(0, 1)
-    | '<' -> Pos(-1, 0)
-    | 'v' -> Pos(0, 1)
+    | '^' -> Vec(0, -1)
+    | '>' -> Vec(0, 1)
+    | '<' -> Vec(-1, 0)
+    | 'v' -> Vec(0, 1)
     | _ -> failwith "bad starting position"
 
 let getStartingPosition (grid: char array array) =
@@ -33,7 +33,7 @@ let getStartingPosition (grid: char array array) =
     |> Seq.pick (fun y ->
         seq { 0 .. grid[y].Length - 1 }
         |> Seq.tryPick (fun x ->
-            let pos = Pos(x, y)
+            let pos = Vec(x, y)
 
             match grid |> tryGet pos |> ValueOption.get with
             | '^'
@@ -42,7 +42,7 @@ let getStartingPosition (grid: char array array) =
             | 'v' -> Some(pos)
             | _ -> None))
 
-let walk (startingPosition: Pos) (startingDirection: Pos) (visited: HashSet<struct (Pos * Pos)>) (grid: char array array) =
+let walk (startingPosition: Vec) (startingDirection: Vec) (visited: HashSet<struct (Vec * Vec)>) (grid: char array array) =
     let mutable direction = startingDirection
     let mutable pos = startingPosition
     visited.EnsureCapacity(5000) |> ignore // Typical path has about 4700 steps
@@ -65,7 +65,7 @@ let run1 () =
     let startingDirection =
         grid |> tryGet startingPosition |> ValueOption.get |> arrowToDirection
 
-    let visited = HashSet<struct (Pos * Pos)>()
+    let visited = HashSet<struct (Vec * Vec)>()
     let positions =
         grid
         |> walk startingPosition startingDirection visited
@@ -82,7 +82,7 @@ let run2 () =
     let startingDirection =
         grid |> tryGet startingPosition |> ValueOption.get |> arrowToDirection
 
-    let visited = HashSet<struct (Pos * Pos)>()
+    let visited = HashSet<struct (Vec * Vec)>()
     let positions =
         grid
         |> walk startingPosition startingDirection visited
