@@ -35,19 +35,24 @@ type Vec =
 
         member this.asPair = struct (this.X, this.Y)
     end
-    static member (+) (a: Vec, b: Vec) = Vec(a.X + b.X, a.Y + b.Y)
-    static member (-) (a: Vec, b: Vec) = Vec(a.X - b.X, a.Y - b.Y)
-    static member (*) (a: Vec, b: int) = Vec(a.X * b, a.Y * b)
-    static member (*) (b: int, a: Vec) = Vec(a.X * b, a.Y * b)
 
-let add (a: Vec) (b: Vec) = Vec(a.X + b.X, a.Y + b.Y)
+    static member (+)(a: Vec, b: Vec) = Vec(a.X + b.X, a.Y + b.Y)
+    static member (-)(a: Vec, b: Vec) = Vec(a.X - b.X, a.Y - b.Y)
+    static member (*)(a: Vec, b: int) = Vec(a.X * b, a.Y * b)
+    static member (*)(b: int, a: Vec) = Vec(a.X * b, a.Y * b)
+
+let sfst(struct(a, _)) = a
+let ssnd(struct(_, b)) = b
 
 type Grid<'T> =
     { Data: 'T array array }
 
     member this.Height = this.Data.Length
     member this.Width = this.Data[0].Length
-    member this.Item(index: Vec) = this.Data[index.Y][index.X]
+    member this.Item
+        with get(index: Vec) = this.Data[index.Y][index.X]
+        and set(index: Vec) (value: 'T) =
+            this.Data[index.Y][index.X] <- value
 
 module Grid =
     let fromLines (lines: string array) =
@@ -61,3 +66,9 @@ module Grid =
 
     let hasIndex (pos: Vec) (this: Grid<'T>) =
         pos.X >= 0 && pos.Y >= 0 && pos.X < this.Width && pos.Y < this.Height
+
+    let tryGet (pos: Vec) (this: char Grid) =
+        if this |> hasIndex pos then
+            ValueSome(this[pos])
+        else
+            ValueNone
