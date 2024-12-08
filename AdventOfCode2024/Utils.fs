@@ -38,5 +38,7 @@ module Pos =
         end
         static member (+) (a: Pos, b: Pos) = Pos(a.X + b.X, a.Y + b.Y)
         static member (-) (a: Pos, b: Pos) = Pos(a.X - b.X, a.Y - b.Y)
+        static member (*) (a: Pos, b: int) = Pos(a.X * b, a.Y * b)
+        static member (*) (b: int, a: Pos) = Pos(a.X * b, a.Y * b)
 
     let add (a: Pos) (b: Pos) = Pos(a.X + b.X, a.Y + b.Y)
