@@ -5,9 +5,6 @@ open System.IO
 open FSharpPlus
 open AdventOfCode2024.Utils
 
-let isAlnum letter =
-    Char.IsNumber letter || Char.IsLetter letter
-
 let run1 () =
     let grid = File.ReadAllLines("data8.txt") |> Grid.fromLines
 

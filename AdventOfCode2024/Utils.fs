@@ -1,30 +1,13 @@
 module AdventOfCode2024.Utils
 
 open FSharpPlus
+open System
 
-type Grid1(text: string array) =
-    let height = text.Length
-    let width = text[0].Length
+let sfst (struct (a, _)) = a
+let ssnd (struct (_, b)) = b
 
-    let diagonal fn =
-        seq { 0 .. width + height - 2 }
-        |> map (fun k ->
-            seq {
-                for j in 0..k do
-                    let i = k - j
-
-                    if i < height && j < width then
-                        yield text[i][fn j]
-            }
-            |> String.ofSeq)
-
-    member _.Vertical =
-        seq { 0 .. width - 1 }
-        |> map (fun x -> seq { 0 .. height - 1 } |> Seq.map (fun y -> text[y][x]) |> String.ofSeq)
-
-    member _.DiagonalUp = diagonal id
-
-    member _.DiagonalDown = diagonal (fun j -> width - 1 - j)
+let isAlnum letter =
+    Char.IsNumber letter || Char.IsLetter letter
 
 type Vec =
     struct // Tuples allocate on the heap
@@ -41,18 +24,16 @@ type Vec =
     static member (*)(a: Vec, b: int) = Vec(a.X * b, a.Y * b)
     static member (*)(b: int, a: Vec) = Vec(a.X * b, a.Y * b)
 
-let sfst(struct(a, _)) = a
-let ssnd(struct(_, b)) = b
 
 type Grid<'T> =
     { Data: 'T array array }
 
     member this.Height = this.Data.Length
     member this.Width = this.Data[0].Length
+
     member this.Item
-        with get(index: Vec) = this.Data[index.Y][index.X]
-        and set(index: Vec) (value: 'T) =
-            this.Data[index.Y][index.X] <- value
+        with get (index: Vec) = this.Data[index.Y][index.X]
+        and set (index: Vec) (value: 'T) = this.Data[index.Y][index.X] <- value
 
 module Grid =
     let fromLines (lines: string array) =
@@ -67,8 +48,28 @@ module Grid =
     let hasIndex (pos: Vec) (this: Grid<'T>) =
         pos.X >= 0 && pos.Y >= 0 && pos.X < this.Width && pos.Y < this.Height
 
-    let tryGet (pos: Vec) (this: char Grid) =
+    let tryGet (pos: Vec) (this: 'T Grid) =
         if this |> hasIndex pos then
             ValueSome(this[pos])
         else
             ValueNone
+
+    let _diagonal fn (grid: 'T Grid) =
+        seq { 0 .. grid.Width + grid.Height - 2 }
+        |> map (fun k ->
+            seq {
+                for j in 0..k do
+                    let i = k - j
+
+                    if i < grid.Height && j < grid.Width then
+                        yield grid.Data[i][fn j]
+            })
+
+    let diagonalUp (grid: 'T Grid) = grid |> _diagonal id
+
+    let diagonalDown (grid: 'T Grid) =
+        grid |> _diagonal (fun j -> grid.Width - 1 - j)
+
+    let verticalSlices (grid: 'T Grid) =
+        seq { 0 .. grid.Width - 1 }
+        |> map (fun x -> seq { 0 .. grid.Height - 1 } |> Seq.map (fun y -> grid.Data[y][x]))

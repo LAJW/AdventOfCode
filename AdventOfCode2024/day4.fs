@@ -11,9 +11,12 @@ let run1 () =
     let countXmas line =
         Regex.Matches(line, "XMAS").Count + Regex.Matches(rev line, "XMAS").Count
 
-    let grid = Grid1 text
+    let grid = text |> Grid.fromLines
+    let vertical = grid |> Grid.verticalSlices |> map String.ofSeq
+    let diagonalUp = grid |> Grid.diagonalUp |> map String.ofSeq
+    let diagonalDown = grid |> Grid.diagonalDown |> map String.ofSeq
 
-    [ toSeq text; grid.Vertical; grid.DiagonalUp; grid.DiagonalDown ]
+    [ toSeq text; vertical; diagonalUp; diagonalDown ]
     |> Seq.concat
     |> map countXmas
     |> Seq.sum
