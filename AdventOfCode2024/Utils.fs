@@ -34,6 +34,9 @@ type Grid<'T> =
     member this.Item
         with get (index: Vec) = this.Data[index.Y][index.X]
         and set (index: Vec) (value: 'T) = this.Data[index.Y][index.X] <- value
+    
+    member this.HasIndex (pos: Vec) =
+        pos.X >= 0 && pos.Y >= 0 && pos.X < this.Width && pos.Y < this.Height
 
 module Grid =
     let fromLines (lines: string array) =
@@ -46,7 +49,7 @@ module Grid =
         this |> indices |> Seq.map (fun index -> index, this[index])
 
     let hasIndex (pos: Vec) (this: Grid<'T>) =
-        pos.X >= 0 && pos.Y >= 0 && pos.X < this.Width && pos.Y < this.Height
+        this.HasIndex pos
 
     let tryGet (pos: Vec) (this: 'T Grid) =
         if this |> hasIndex pos then

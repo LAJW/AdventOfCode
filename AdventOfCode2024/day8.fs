@@ -26,7 +26,7 @@ let solve (getAntinodes: Vec -> Vec -> char Grid -> Vec seq) =
         |> Seq.collect (fun positions -> positions |> Seq.allPairs positions)
         |> Seq.filter (fun (a, b) -> a <> b)
         |> Seq.collect (fun (a, b) -> getAntinodes a b grid)
-        |> Seq.filter (fun pos -> grid |> Grid.hasIndex pos)
+        |> Seq.filter grid.HasIndex
         |> Set
 
     antinodes.Count |> printfn "%d"
@@ -39,13 +39,6 @@ let run1 () =
 let run2 () =
     solve (fun a b grid ->
         let diff = b - a
-
-        let before =
-            Seq.initInfinite (fun i -> a - diff * i)
-            |> Seq.takeWhile (fun pos -> grid |> Grid.hasIndex pos)
-
-        let after =
-            Seq.initInfinite (fun i -> b + diff * i)
-            |> Seq.takeWhile (fun pos -> grid |> Grid.hasIndex pos)
-
+        let before = Seq.initInfinite (fun i -> a - diff * i) |> Seq.takeWhile grid.HasIndex
+        let after = Seq.initInfinite (fun i -> b + diff * i) |> Seq.takeWhile grid.HasIndex
         Seq.append before after)

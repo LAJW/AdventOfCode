@@ -36,7 +36,7 @@ let walk (startingPosition: Vec) (startingDirection: Vec) (visited: HashSet<stru
     let mutable pos = startingPosition
     visited.EnsureCapacity(5000) |> ignore // Typical path has about 4700 steps
 
-    while grid |> Grid.hasIndex pos && not <| visited.Contains(pos, direction) do
+    while grid.HasIndex pos && not <| visited.Contains(pos, direction) do
         let next = pos + direction
 
         match grid |> Grid.tryGet next with
@@ -78,7 +78,7 @@ let run2 () =
     let loops (grid: char Grid) =
         let set, finalPos = grid |> walk startingPosition startingDirection visited
         set.Clear() // Free memory from the previous iteration
-        grid |> Grid.hasIndex finalPos
+        grid.HasIndex finalPos
 
     let loopingPositionCount =
         positions
