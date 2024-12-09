@@ -5,14 +5,6 @@ open System.Collections.Generic
 open System.IO
 open AdventOfCode2024.Utils
 
-let turnRight (dir: Vec) =
-    match dir.asPair with
-    | 1, 0 -> Vec(0, 1)
-    | 0, 1 -> Vec(-1, 0)
-    | -1, 0 -> Vec(0, -1)
-    | 0, -1 -> Vec(1, 0)
-    | _ -> failwith "function only works with directional vectors"
-
 let arrowToDirection ch =
     match ch with
     | '^' -> Vec(0, -1)
@@ -41,10 +33,10 @@ let walk (startingPosition: Vec) (startingDirection: Vec) (visited: HashSet<stru
         let next = pos + direction
 
         match grid |> Grid.tryGet next with
-        | ValueSome('#') -> direction <- direction |> turnRight
+        | ValueSome('#') -> direction <- direction |> Vec.turnRight
         | _ ->
             visited.Add(pos, direction) |> ignore
-            pos <- pos + direction
+            pos <- next
 
     visited, pos
 

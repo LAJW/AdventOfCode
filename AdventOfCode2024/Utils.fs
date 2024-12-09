@@ -24,6 +24,8 @@ type Vec =
     static member inline (*)(a: Vec, b: int) = Vec(a.X * b, a.Y * b)
     static member inline (*)(b: int, a: Vec) = Vec(a.X * b, a.Y * b)
 
+    static member turnRight (dir: Vec) = Vec(-dir.Y, dir.X)
+
 
 type Grid<'T> =
     { Data: 'T array array }
@@ -51,7 +53,7 @@ module Grid =
     let hasIndex (pos: Vec) (this: Grid<'T>) = this.HasIndex pos
 
     let tryGet (pos: Vec) (this: 'T Grid) =
-        if this |> hasIndex pos then
+        if this.HasIndex pos then
             ValueSome(this[pos])
         else
             ValueNone
