@@ -3,8 +3,9 @@ module AdventOfCode2024.Utils
 open FSharpPlus
 open System
 
-let sfst (struct (a, _)) = a
-let ssnd (struct (_, b)) = b
+let inline sfst (struct (a, _)) = a
+let inline ssnd (struct (_, b)) = b
+let inline is a b = a = b
 
 let isAlnum letter =
     Char.IsNumber letter || Char.IsLetter letter
@@ -25,6 +26,8 @@ type Vec =
     static member inline (*)(b: int, a: Vec) = Vec(a.X * b, a.Y * b)
 
     static member turnRight (dir: Vec) = Vec(-dir.Y, dir.X)
+
+    static member Cardinals = [ Vec(1, 0); Vec(0, 1); Vec(-1, 0); Vec(0, -1) ]
 
 
 type Grid<'T> =
