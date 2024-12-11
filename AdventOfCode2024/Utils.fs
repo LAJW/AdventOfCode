@@ -2,6 +2,7 @@ module AdventOfCode2024.Utils
 
 open FSharpPlus
 open System
+open System.Collections.Generic
 
 let inline sfst (struct (a, _)) = a
 let inline ssnd (struct (_, b)) = b
@@ -80,3 +81,14 @@ module Grid =
     let verticalSlices (grid: 'T Grid) =
         seq { 0 .. grid.Width - 1 }
         |> map (fun x -> seq { 0 .. grid.Height - 1 } |> Seq.map (fun y -> grid.Data[y][x]))
+        
+let memoize fn =
+    let cache = Dictionary<_, _>()
+
+    fun args ->
+        match cache.TryGetValue args with
+        | true, value -> value
+        | false, _ ->
+            let result = fn args
+            cache.Add(args, result)
+            result
