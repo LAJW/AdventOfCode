@@ -36,6 +36,9 @@
         <Content Include="day10.txt">
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
+        <Content Include="day11.txt">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
         <Compile Include="Utils.fs" />
         <Compile Include="day1.fs" />
         <Compile Include="day2.fs" />
@@ -47,6 +50,7 @@
         <Compile Include="day8.fs" />
         <Compile Include="day9.fs" />
         <Compile Include="day10.fs" />
+        <Compile Include="day11.fs" />
     </ItemGroup>
 
     <ItemGroup>
