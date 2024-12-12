@@ -22,60 +22,58 @@ let findAreas (grid: Grid<_>) =
         closed.UnionWith(area)
         area)
 
-let run1 () =
-    let lines = File.ReadAllLines("day12.txt")
-    let grid = Grid.fromLines lines
+let countEdges line (area: IReadOnlySet<Vec>) =
+    line
+    |> Seq.map area.Contains
+    |> Seq.pairwise
+    |> Seq.countIf (fun (a, b) -> a <> b)
 
-    let areas = grid |> findAreas
+let cost (area: IReadOnlySet<Vec>) =
+    let surfaceArea = area.Count
+    let lo, hi = findMinMax area
 
-    let edgeDetect line (area: HashSet<Vec>) =
-        line
-        |> Seq.map area.Contains
-        |> Seq.pairwise
-        |> Seq.countIf (fun (a, b) -> a <> b)
+    let count =
+        (lo - Vec(1, 1) |> Vec.untilVertically (hi + Vec(2, 2)))
+        |> Seq.append (lo - Vec(1, 1) |> Vec.untilHorizontally (hi + Vec(2, 2)))
+        |> Seq.map (fun line -> area |> countEdges line)
+        |> Seq.sum
 
-    areas
-    |> Seq.map (fun area ->
-        let surfaceArea = area.Count
-        let lo, hi = findMinMax area
+    surfaceArea * count
 
-        let count =
-            (lo - Vec(1, 1) |> Vec.untilVertically (hi + Vec(2, 2)))
-            |> Seq.append (lo - Vec(1, 1) |> Vec.untilHorizontally (hi + Vec(2, 2)))
-            |> Seq.map (fun line -> area |> edgeDetect line)
-            |> Seq.sum
+let discountedCost (area: IReadOnlySet<Vec>) =
+    let surfaceArea = area.Count
+    let lo, hi = findMinMax area
 
-        surfaceArea * count)
-    |> Seq.sum
-    |> printfn "%d"
+    let verticalStripes =
+        (lo - Vec(1, 1) |> Vec.untilVertically (hi + Vec(2, 2)))
+        |> Seq.map (Seq.map (fun pos -> area.Contains pos, area.Contains(pos + Vec(1, 0))))
 
-let run2 () =
+    let horizontalStripes =
+        (lo - Vec(1, 1) |> Vec.untilHorizontally (hi + Vec(2, 2)))
+        |> Seq.map (Seq.map (fun pos -> area.Contains pos, area.Contains(pos + Vec(0, 1))))
+
+    let count =
+        Seq.append verticalStripes horizontalStripes
+        |> Seq.map (
+            Seq.pairwise
+            >> Seq.countIf (fun (prev, cur) ->
+                let a, b = cur
+                a <> b && cur <> prev)
+        )
+        |> Seq.sum
+
+    surfaceArea * count
+
+let solve costFunction =
     benchmark (fun () ->
         File.ReadAllLines("day12.txt")
         |> Grid.fromLines
         |> findAreas
-        |> Seq.map (fun area ->
-            let surfaceArea = area.Count
-            let lo, hi = findMinMax area
-
-            let verticalStripes =
-                (lo - Vec(1, 1) |> Vec.untilVertically (hi + Vec(2, 2)))
-                |> Seq.map (Seq.map (fun pos -> area.Contains pos, area.Contains(pos + Vec(1, 0))))
-
-            let horizontalStripes =
-                (lo - Vec(1, 1) |> Vec.untilHorizontally (hi + Vec(2, 2)))
-                |> Seq.map (Seq.map (fun pos -> area.Contains pos, area.Contains(pos + Vec(0, 1))))
-
-            let count =
-                Seq.append verticalStripes horizontalStripes
-                |> Seq.map (
-                    Seq.pairwise
-                    >> Seq.countIf (fun (prev, cur) ->
-                        let a, b = cur
-                        a <> b && cur <> prev)
-                )
-                |> Seq.sum
-
-            surfaceArea * count)
+        |> Seq.map costFunction
         |> Seq.sum
         |> printfn "%d")
+    
+
+let run1 () = solve cost
+
+let run2 () = solve discountedCost
