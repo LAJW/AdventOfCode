@@ -102,3 +102,10 @@ let memoize fn =
             let result = fn args
             cache.Add(args, result)
             result
+
+let benchmark fn =
+    let time = DateTime.Now
+    let result = fn()
+    let diff = DateTime.Now - time
+    printfn $"Runtime: {diff}"
+    result
