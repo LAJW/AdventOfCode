@@ -64,3 +64,56 @@ let run1 () =
         surfaceArea * count
     )
     |> Seq.sum |> printfn "%d"
+
+
+let run2 () =
+    let lines = File.ReadAllLines("day12.txt")
+    let grid = Grid.fromLines lines
+    let closed = HashSet<Vec>()
+
+    let areas =
+        grid
+        |> Grid.enumerate
+        |> Seq.filter (fst >> closed.Contains >> not)
+        |> Seq.map (fun (pos, letter) ->
+            let _open = HashSet [ pos ]
+            let curClosed = HashSet<Vec> []
+
+            while _open.Count > 0 do
+                let cur = _open |> Seq.head
+
+                Vec.Cardinals
+                |> Seq.map (fun cardinal -> cardinal + cur)
+                |> Seq.filter (fun next -> grid.HasIndex next && grid[next] = letter && (not <| closed.Contains next))
+                |> Seq.iter (_open.Add >> ignore)
+
+                _open.Remove(cur) |> ignore
+                closed.Add(cur) |> ignore
+                curClosed.Add(cur) |> ignore
+
+            curClosed)
+
+    areas |> Seq.map(fun area ->
+        let surfaceArea = area.Count
+
+        let mutable count = 0
+        for x in -1..grid.Width do
+            let mutable prev = struct(false, false)
+            for y in -1..grid.Height do
+                let a, b = area.Contains (Vec(x, y)), area.Contains(Vec(x + 1, y))
+                let cur = struct(a, b)
+                if a <> b && cur <> prev then
+                    count <- count + 1
+                prev <- cur
+                    
+        for y in -1..grid.Height do
+            let mutable prev = struct(false, false)
+            for x in -1..grid.Width do
+                let a, b = area.Contains (Vec(x, y)), area.Contains(Vec(x, y + 1))
+                let cur = struct(a, b)
+                if a <> b && cur <> prev then
+                    count <- count + 1
+                prev <- cur
+        surfaceArea * count
+    )
+    |> Seq.sum |> printfn "%d"
