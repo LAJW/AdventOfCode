@@ -19,6 +19,8 @@ type Vec =
         new(x: int, y: int) = { X = x; Y = y }
 
         member this.asPair = struct (this.X, this.Y)
+        
+        override this.ToString() = $"[{this.X},{this.Y}]"
     end
 
     static member inline (+)(a: Vec, b: Vec) = Vec(a.X + b.X, a.Y + b.Y)
@@ -81,6 +83,14 @@ module Grid =
     let verticalSlices (grid: 'T Grid) =
         seq { 0 .. grid.Width - 1 }
         |> map (fun x -> seq { 0 .. grid.Height - 1 } |> Seq.map (fun y -> grid.Data[y][x]))
+        
+    let verticalIndexes (grid: 'T Grid) =
+        seq { 0 .. grid.Width - 1 }
+        |> map (fun x -> seq { 0 .. grid.Height - 1 } |> Seq.map (fun y -> Vec(x, y)))
+        
+    let horizontalIndexes (grid: 'T Grid) =
+        seq { 0 .. grid.Height - 1 }
+        |> map (fun y -> seq { 0 .. grid.Width - 1 } |> Seq.map (fun x -> Vec(x, y)))
         
 let memoize fn =
     let cache = Dictionary<_, _>()
