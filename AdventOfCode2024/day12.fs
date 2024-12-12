@@ -39,17 +39,12 @@ let run1 () =
         let surfaceArea = area.Count
         let lo, hi = findMinMax area
 
-        let countVertical =
+        let count =
             (lo - Vec(1, 1) |> Vec.untilVertically (hi + Vec(2, 2)))
+            |> Seq.append (lo - Vec(1, 1) |> Vec.untilHorizontally (hi + Vec(2, 2)))
             |> Seq.map (fun line -> area |> edgeDetect line)
             |> Seq.sum
 
-        let countHorizontal =
-            (lo - Vec(1, 1) |> Vec.untilHorizontally (hi + Vec(2, 2)))
-            |> Seq.map (fun line -> area |> edgeDetect line)
-            |> Seq.sum
-
-        let count = countHorizontal + countVertical
         surfaceArea * count)
     |> Seq.sum
     |> printfn "%d"
@@ -63,29 +58,24 @@ let run2 () =
             let surfaceArea = area.Count
             let lo, hi = findMinMax area
 
-            let countVertical =
+            let verticalStripes =
                 (lo - Vec(1, 1) |> Vec.untilVertically (hi + Vec(2, 2)))
-                |> Seq.map (
-                    Seq.map (fun pos -> area.Contains pos, area.Contains(pos + Vec(1, 0)))
-                    >> Seq.pairwise
-                    >> Seq.countIf (fun (prev, cur) ->
-                        let a, b = cur
-                        a <> b && cur <> prev)
-                )
-                |> Seq.sum
+                |> Seq.map (Seq.map (fun pos -> area.Contains pos, area.Contains(pos + Vec(1, 0))))
 
-            let countHorizontal =
+            let horizontalStripes =
                 (lo - Vec(1, 1) |> Vec.untilHorizontally (hi + Vec(2, 2)))
+                |> Seq.map (Seq.map (fun pos -> area.Contains pos, area.Contains(pos + Vec(0, 1))))
+
+            let count =
+                Seq.append verticalStripes horizontalStripes
                 |> Seq.map (
-                    Seq.map (fun pos -> area.Contains pos, area.Contains(pos + Vec(0, 1)))
-                    >> Seq.pairwise
+                    Seq.pairwise
                     >> Seq.countIf (fun (prev, cur) ->
                         let a, b = cur
                         a <> b && cur <> prev)
                 )
                 |> Seq.sum
 
-            let count = countVertical + countHorizontal
             surfaceArea * count)
         |> Seq.sum
         |> printfn "%d")
