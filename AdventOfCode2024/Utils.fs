@@ -10,6 +10,9 @@ let inline is a b = a = b
 
 let isAlnum letter =
     Char.IsNumber letter || Char.IsLetter letter
+    
+module Seq =
+    let countIf pred list = list |> Seq.filter pred |> Seq.length
 
 type Vec =
     struct // Tuples allocate on the heap

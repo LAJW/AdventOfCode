@@ -28,32 +28,25 @@ let run1 () =
 
     let areas = grid |> findAreas
 
+    let edgeDetect line (area: HashSet<Vec>) =
+        line
+        |> Seq.map area.Contains
+        |> Seq.pairwise
+        |> Seq.countIf (fun (a, b) -> a <> b)
+
     areas
     |> Seq.map (fun area ->
         let surfaceArea = area.Count
+        let lo, hi = findMinMax area
 
         let countVertical =
-            grid
-            |> Grid.verticalIndexes
-            |> Seq.map (fun line ->
-                let tmp = line |> Seq.map area.Contains |> Seq.toList
-
-                [ false ] @ tmp @ [ false ]
-                |> Seq.pairwise
-                |> Seq.filter (fun (a, b) -> a <> b)
-                |> Seq.length)
+            (lo - Vec(1, 1) |> Vec.untilVertically (hi + Vec(2, 2)))
+            |> Seq.map (fun line -> area |> edgeDetect line)
             |> Seq.sum
 
         let countHorizontal =
-            grid
-            |> Grid.horizontalIndexes
-            |> Seq.map (fun line ->
-                let tmp = line |> Seq.map area.Contains |> Seq.toList
-
-                [ false ] @ tmp @ [ false ]
-                |> Seq.pairwise
-                |> Seq.filter (fun (a, b) -> a <> b)
-                |> Seq.length)
+            (lo - Vec(1, 1) |> Vec.untilHorizontally (hi + Vec(2, 2)))
+            |> Seq.map (fun line -> area |> edgeDetect line)
             |> Seq.sum
 
         let count = countHorizontal + countVertical
