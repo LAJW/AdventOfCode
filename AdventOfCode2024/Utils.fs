@@ -32,6 +32,14 @@ type Vec =
 
     static member Cardinals = [ Vec(1, 0); Vec(0, 1); Vec(-1, 0); Vec(0, -1) ]
 
+module Vec =
+    let untilVertically (dest : Vec) (from : Vec) =
+        seq { from.X .. dest.X - 1 }
+        |> Seq.map (fun x -> seq { from.Y .. dest.Y - 1 } |> Seq.map (fun y -> Vec(x, y)))
+        
+    let untilHorizontally (dest : Vec) (from : Vec) =
+        seq { from.Y .. dest.Y - 1 }
+        |> Seq.map (fun y -> seq { from.X .. dest.X - 1 } |> Seq.map (fun x -> Vec(x, y)))
 
 type Grid<'T> =
     { Data: 'T array array }
@@ -91,6 +99,24 @@ module Grid =
     let horizontalIndexes (grid: 'T Grid) =
         seq { 0 .. grid.Height - 1 }
         |> map (fun y -> seq { 0 .. grid.Width - 1 } |> Seq.map (fun x -> Vec(x, y)))
+
+    let floodFill pos (grid : Grid<_>) =
+        let letter = grid[pos]
+        let _open = HashSet [ pos ]
+        let closed = HashSet<Vec> []
+
+        while _open.Count > 0 do
+            let cur = _open |> Seq.head
+
+            Vec.Cardinals
+            |> Seq.map (fun cardinal -> cardinal + cur)
+            |> Seq.filter (fun next -> grid.HasIndex next && grid[next] = letter && (not <| closed.Contains next))
+            |> Seq.iter (_open.Add >> ignore)
+
+            _open.Remove(cur) |> ignore
+            closed.Add(cur) |> ignore
+
+        closed
         
 let memoize fn =
     let cache = Dictionary<_, _>()
