@@ -62,32 +62,30 @@ let run2 () =
         |> Seq.map (fun area ->
             let surfaceArea = area.Count
             let lo, hi = findMinMax area
-            let mutable count = 0
 
-            for x in lo.X - 1 .. hi.X do
-                let mutable prev = struct (false, false)
+            let countVertical =
+                (lo - Vec(1, 1) |> Vec.untilVertically (hi + Vec(2, 2)))
+                |> Seq.map (
+                    Seq.map (fun pos -> area.Contains pos, area.Contains(pos + Vec(1, 0)))
+                    >> Seq.pairwise
+                    >> Seq.countIf (fun (prev, cur) ->
+                        let a, b = cur
+                        a <> b && cur <> prev)
+                )
+                |> Seq.sum
 
-                for y in lo.Y - 1 .. hi.Y do
-                    let a, b = area.Contains(Vec(x, y)), area.Contains(Vec(x + 1, y))
-                    let cur = struct (a, b)
+            let countHorizontal =
+                (lo - Vec(1, 1) |> Vec.untilHorizontally (hi + Vec(2, 2)))
+                |> Seq.map (
+                    Seq.map (fun pos -> area.Contains pos, area.Contains(pos + Vec(0, 1)))
+                    >> Seq.pairwise
+                    >> Seq.countIf (fun (prev, cur) ->
+                        let a, b = cur
+                        a <> b && cur <> prev)
+                )
+                |> Seq.sum
 
-                    if a <> b && cur <> prev then
-                        count <- count + 1
-
-                    prev <- cur
-
-            for y in lo.Y - 1 .. hi.Y do
-                let mutable prev = struct (false, false)
-
-                for x in lo.X - 1 .. hi.X do
-                    let a, b = area.Contains(Vec(x, y)), area.Contains(Vec(x, y + 1))
-                    let cur = struct (a, b)
-
-                    if a <> b && cur <> prev then
-                        count <- count + 1
-
-                    prev <- cur
-
+            let count = countVertical + countHorizontal
             surfaceArea * count)
         |> Seq.sum
         |> printfn "%d")
