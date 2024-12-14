@@ -58,7 +58,7 @@ let solve offset =
     )
     |> Seq.toList
     |> Seq.sum
-    |> printfn $"%d"
+    |> printfn "%d"
 
 let part1() = solve 0
 let part2() = solve 10000000000000L

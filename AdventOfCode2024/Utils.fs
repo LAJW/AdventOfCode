@@ -21,7 +21,7 @@ type Vec =
 
         new(x: int, y: int) = { X = x; Y = y }
 
-        member this.asPair = struct (this.X, this.Y)
+        member this.asPair with get() = struct (this.X, this.Y)
         
         override this.ToString() = $"[{this.X},{this.Y}]"
     end
