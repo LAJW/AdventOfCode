@@ -34,6 +34,12 @@ type Vec =
     static member turnRight (dir: Vec) = Vec(-dir.Y, dir.X)
 
     static member Cardinals = [ Vec(1, 0); Vec(0, 1); Vec(-1, 0); Vec(0, -1) ]
+   
+    static member up = Vec(0, -1)
+    static member right = Vec(1, 0)
+    static member left = Vec(-1, 0)
+    static member down = Vec(0, 1)
+
 
 module Vec =
     let untilVertically (dest : Vec) (from : Vec) =
@@ -62,7 +68,7 @@ module Grid =
         { Data = lines |> Array.map String.toArray }
 
     let indices (this: Grid<'T>) =
-        Seq.allPairs (Seq.init this.Height id) (Seq.init this.Width id) |> Seq.map Vec
+        Seq.allPairs (Seq.init this.Width id) (Seq.init this.Height id) |> Seq.map Vec
 
     let enumerate (this: Grid<'T>) =
         this |> indices |> Seq.map (fun index -> index, this[index])
