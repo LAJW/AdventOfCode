@@ -14,6 +14,9 @@ let isAlnum letter =
 module Seq =
     let countIf pred list = list |> Seq.filter pred |> Seq.length
 
+module String =
+    let join (delim: string) (strs: string seq) = String.Join(delim, strs)
+
 type Vec =
     struct // Tuples allocate on the heap
         val X: int

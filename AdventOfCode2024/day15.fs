@@ -5,122 +5,62 @@ open System
 open AdventOfCode2024.Utils
 open FSharpPlus
 
-let join (delim: string) (strs: string seq) = String.Join(delim, strs)
-
 let show (grid: Grid<char>) =
     Console.Clear()
-    Console.WriteLine(grid.Data |> Seq.map String.ofArray |> join "\n")
+    Console.WriteLine(grid.Data |> Seq.map String.ofArray |> String.join "\n")
 
-let run1 () =
-    let text = File.ReadAllText("day15.txt").TrimEnd()
+let preprocess (mapText : string) = 
+    mapText.Replace("#", "##").Replace(".", "..").Replace("O", "[]").Replace("@", "@.")
 
-    let [| mapStr; instructions |] = text.Split("\n\n")
-    let grid = mapStr.Split("\n") |> Grid.fromLines
-    let moves = instructions.Split("\n") |> join "" |> Seq.map Vec.fromArrow
-    let mutable pos = grid |> Grid.enumerate |> Seq.find (snd >> (=) '@') |> fst
-
-    let rec push direction pos =
-        let next = pos + direction
-
-        match grid[next] with
-        | '#' -> false
-        | 'O' ->
-            let pushed = push direction next
-
-            if pushed then
-                grid[next] <- grid[pos]
-                grid[pos] <- '.'
-                true
-            else
-                false
-        | '.' ->
-            grid[next] <- grid[pos]
-            grid[pos] <- '.'
-            true
-        | _ -> failwith "unreachable"
-
-    for move in moves do
-        if push move pos then
-            pos <- pos + move
-
-    show grid
-
-    grid
-    |> Grid.enumerate
-    |> Seq.filter (snd >> is 'O')
-    |> Seq.map (fun (pos, _) -> pos.Y * 100 + pos.X)
-    |> Seq.sum
-    |> printfn "%d"
-
-let run2 () =
-    // let text = File.ReadAllText("./AdventOfCode2024/day15.txt").TrimEnd()
-    let text = File.ReadAllText("day15.txt").TrimEnd()
-    
-    let text = text.Replace("#", "##").Replace(".", "..").Replace("O", "[]").Replace("@", "@.")
-
-    let [| mapStr; instructions |] = text.Split("\n\n")
-    let grid = mapStr.Split("\n") |> Grid.fromLines
-    let moves = instructions.Split("\n") |> join "" |> Seq.map Vec.fromArrow
-    let mutable pos = grid |> Grid.enumerate |> Seq.find (snd >> (=) '@') |> fst
-    
-    let rec pushVertical direction (positions: Vec Set) =
+// returns true if elements were pushed
+let push (direction : Vec) (pos : Vec) (grid : Grid<char>): bool =
+    let rec iter (positions: Vec Set) =
         let nexts = positions |> Seq.map((+) direction)
         if positions.IsEmpty then true
         else if nexts |> Seq.exists (fun next -> grid[next] = '#') then false
         else
             let nextLayer =
                 nexts |> Seq.collect (fun next ->
-                    match grid[next] with
-                    | '[' -> [next; next + Vec.right]
-                    | ']' -> [next; next + Vec.left]
-                    | '.' -> List.empty
+                    match grid[next], direction.asPair with
+                    | '[', (0, _) -> [next; next + Vec.right]
+                    | ']', (0, _) -> [next; next + Vec.left]
+                    | ('O' | '[' | ']'), _ -> [next]
+                    | '.', _ -> List.empty
                     | _ -> failwith "unreachable"
                 )
                 |> Set
 
-            if pushVertical direction nextLayer then
+            let wasPushed = iter nextLayer
+            if wasPushed then
                 for pos in positions do
                     grid[pos + direction] <- grid[pos]
                     grid[pos] <- '.'
-                true
-            else
-                false
+            wasPushed
+    iter (Set [pos])
 
-    // Same as previous push
-    let rec pushHorizontal (direction : Vec) (pos: Vec) =
-        let next = pos + direction
-        match grid[next] with
-        | '#' -> false
-        | '[' | ']' ->
-            let pushed = pushHorizontal direction next
+let solve preprocess =
+    let text = File.ReadAllText("day15.txt").TrimEnd()
 
-            if pushed then
-                grid[next] <- grid[pos]
-                grid[pos] <- '.'
-                true
-            else
-                false
-        | '.' ->
-            grid[next] <- grid[pos]
-            grid[pos] <- '.'
-            true
-        | _ -> failwith "unreachable"
-
-    let push (direction : Vec) (pos : Vec) =
-        if direction.Y = 0 then
-            pushHorizontal direction pos
-        else
-            pushVertical direction (Set[pos])
+    let [| mapStr; instructions |] = text.Split("\n\n")
+    let moves = instructions.Split("\n") |> String.join "" |> Seq.map Vec.fromArrow
+    
+    let grid = mapStr |> preprocess |> String.split ["\n"] |> Seq.toArray |> Grid.fromLines
+    let mutable pos = grid |> Grid.enumerate |> Seq.find (snd >> (=) '@') |> fst
 
     for move in moves do
-        if push move pos then
+        if grid |> push move pos then
             pos <- pos + move
-            
+
     show grid
 
     grid
     |> Grid.enumerate
-    |> Seq.filter (snd >> is '[')
-    |> Seq.map (fun (pos, _) -> pos.Y * 100 + pos.X)
+    |> Seq.choose (function
+        | pos, ('[' | 'O') -> Some(pos.Y * 100 + pos.X)
+        | _ -> None)
     |> Seq.sum
     |> printfn "%d"
+    
+
+let run1 () = solve id
+let run2 () = solve preprocess
