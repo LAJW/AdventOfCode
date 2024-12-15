@@ -1,21 +1,10 @@
 module AdventOfCode2024.day15
 
-// #r "nuget: FSharpPlus"
-// #r "./bin/Debug/net8.0/AdventOfCode2024.dll"
 open System.IO
 open System
 open AdventOfCode2024.Utils
 open FSharpPlus
-open System.Threading
 
-let arrowToDirection ch =
-    match ch with
-    | '^' -> Vec(0, -1)
-    | '>' -> Vec(1, 0)
-    | '<' -> Vec(-1, 0)
-    | 'v' -> Vec(0, 1)
-    | _ -> failwith "bad starting position"
-    
 let join (delim: string) (strs: string seq) = String.Join(delim, strs)
 
 let show (grid: Grid<char>) =
@@ -23,12 +12,11 @@ let show (grid: Grid<char>) =
     Console.WriteLine(grid.Data |> Seq.map String.ofArray |> join "\n")
 
 let run1 () =
-    // let text = File.ReadAllText("./AdventOfCode2024/day15.txt").TrimEnd()
     let text = File.ReadAllText("day15.txt").TrimEnd()
 
     let [| mapStr; instructions |] = text.Split("\n\n")
     let grid = mapStr.Split("\n") |> Grid.fromLines
-    let moves = instructions.Split("\n") |> join "" |> Seq.map arrowToDirection
+    let moves = instructions.Split("\n") |> join "" |> Seq.map Vec.fromArrow
     let mutable pos = grid |> Grid.enumerate |> Seq.find (snd >> (=) '@') |> fst
 
     let rec push direction pos =
@@ -55,6 +43,8 @@ let run1 () =
         if push move pos then
             pos <- pos + move
 
+    show grid
+
     grid
     |> Grid.enumerate
     |> Seq.filter (snd >> is 'O')
@@ -70,7 +60,7 @@ let run2 () =
 
     let [| mapStr; instructions |] = text.Split("\n\n")
     let grid = mapStr.Split("\n") |> Grid.fromLines
-    let moves = instructions.Split("\n") |> join "" |> Seq.map arrowToDirection
+    let moves = instructions.Split("\n") |> join "" |> Seq.map Vec.fromArrow
     let mutable pos = grid |> Grid.enumerate |> Seq.find (snd >> (=) '@') |> fst
     
     let rec pushVertical direction (positions: Vec Set) =
@@ -125,6 +115,8 @@ let run2 () =
     for move in moves do
         if push move pos then
             pos <- pos + move
+            
+    show grid
 
     grid
     |> Grid.enumerate

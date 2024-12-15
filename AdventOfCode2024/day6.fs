@@ -5,14 +5,6 @@ open System.Collections.Generic
 open System.IO
 open AdventOfCode2024.Utils
 
-let arrowToDirection ch =
-    match ch with
-    | '^' -> Vec(0, -1)
-    | '>' -> Vec(0, 1)
-    | '<' -> Vec(-1, 0)
-    | 'v' -> Vec(0, 1)
-    | _ -> failwith "bad starting position"
-
 let getStartingPosition (grid: char Grid) =
     grid
     |> Grid.enumerate
@@ -43,7 +35,7 @@ let walk (startingPosition: Vec) (startingDirection: Vec) (visited: HashSet<stru
 let run1 () =
     let grid = File.ReadAllLines("data6.txt") |> Grid.fromLines
     let startingPosition = getStartingPosition grid
-    let startingDirection = grid[startingPosition] |> arrowToDirection
+    let startingDirection = grid[startingPosition] |> Vec.fromArrow
     let visited = HashSet<struct (Vec * Vec)>()
 
     let positions =
@@ -59,7 +51,7 @@ let run2 () =
     let startTime = DateTime.Now
     let grid = File.ReadAllLines("data6.txt") |> Grid.fromLines
     let startingPosition = getStartingPosition grid
-    let startingDirection = grid[startingPosition] |> arrowToDirection
+    let startingDirection = grid[startingPosition] |> Vec.fromArrow
     let visited = HashSet<struct (Vec * Vec)>()
 
     let positions =

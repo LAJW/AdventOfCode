@@ -34,11 +34,6 @@ type Vec =
     static member turnRight (dir: Vec) = Vec(-dir.Y, dir.X)
 
     static member Cardinals = [ Vec(1, 0); Vec(0, 1); Vec(-1, 0); Vec(0, -1) ]
-   
-    static member up = Vec(0, -1)
-    static member right = Vec(1, 0)
-    static member left = Vec(-1, 0)
-    static member down = Vec(0, 1)
 
 
 module Vec =
@@ -49,6 +44,19 @@ module Vec =
     let untilHorizontally (dest : Vec) (from : Vec) =
         seq { from.Y .. dest.Y - 1 }
         |> Seq.map (fun y -> seq { from.X .. dest.X - 1 } |> Seq.map (fun x -> Vec(x, y)))
+        
+    let up = Vec(0, -1)
+    let right = Vec(1, 0)
+    let left = Vec(-1, 0)
+    let down = Vec(0, 1)
+
+    let fromArrow ch = 
+        match ch with
+        | '^' -> up
+        | '>' -> right
+        | '<' -> left
+        | 'v' -> down
+        | _ -> failwith "bad directional character"
 
 type Grid<'T> =
     { Data: 'T array array }
