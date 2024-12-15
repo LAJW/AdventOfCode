@@ -12,7 +12,7 @@ let show (grid: Grid<char>) =
 let preprocess (mapText : string) = 
     mapText.Replace("#", "##").Replace(".", "..").Replace("O", "[]").Replace("@", "@.")
 
-// returns true if elements were pushed
+// modifies the grid, returns true if elements were pushed
 let push (direction : Vec) (pos : Vec) (grid : Grid<char>): bool =
     let rec iter (positions: Vec Set) =
         let nexts = positions |> Seq.map((+) direction)
